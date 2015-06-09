@@ -148,7 +148,7 @@ public class CallUtils {
 	             				}// end-if
 	             			}// end-for
 	                     }// end-while
-	                     pCur.close();
+	                     //pCur.close();
 	                }// end-if
 	            }// end-while
 	        }// end-if
