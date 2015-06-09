@@ -52,10 +52,14 @@ public class MyCallReceiver extends BroadcastReceiver {
 			doTaskUpdate(context, dataUtils.isEnableServer());
 		
 		} else {
+			// get hour update
+			mHourUpdate = dataUtils.getTheHourUpdate();
 			// 1. check the hour for update call log, contact
 			// 2. check server enable to set data
 			// 3. update
-			doTaskUpdate(context, dataUtils.isEnableServer());
+			if (callDate.getHours() == mHourUpdate) {
+				doTaskUpdate(context, dataUtils.isEnableServer());
+			}
 		}
 
 		Log.d(">>> trams <<<", "2. onReceive --OKE");
@@ -68,19 +72,14 @@ public class MyCallReceiver extends BroadcastReceiver {
 	
 	private void doTaskUpdate (Context context, boolean isEnableServer) {
 		try {
-			// get hour update
-			mHourUpdate = dataUtils.getTheHourUpdate();
-			// check hour update
-			if (callDate.getHours() == mHourUpdate) {
-				if (isEnableServer && MyUtils.isOnline(context)) {
-					new AsyncDataFromServer().execute(context);
-				} else {
-					// get list patterns
-					listPatterns = dataUtils.getListPattern();
-					
-					// call update
-					myUpdate(context);
-				}
+			if (isEnableServer && MyUtils.isOnline(context)) {
+				new AsyncDataFromServer().execute(context);
+			} else {
+				// get list patterns
+				listPatterns = dataUtils.getListPattern();
+				
+				// call update
+				myUpdate(context);
 			}
 		} catch (Exception ex) {
 			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
