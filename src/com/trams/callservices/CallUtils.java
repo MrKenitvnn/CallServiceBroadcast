@@ -1,4 +1,4 @@
-package com.trams.callservices;
+package com.sktelink.sk00700.callservices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +37,13 @@ public class CallUtils {
 	public void updateNumber(ContentResolver resolver,
 							  String strNumberOne[],
 							  String newNumber) {
+		Cursor cursor = null;
 		try {
-
 			String whereNumber = strNumberOne[0];
 
 			ContentValues values = new ContentValues();
 			values.put(CallLog.Calls.NUMBER, newNumber);
-
-			Cursor cursor = resolver.query(CallLog.Calls.CONTENT_URI, null,
+			cursor = resolver.query(CallLog.Calls.CONTENT_URI, null,
 							CallLog.Calls.NUMBER + " = ? ", strNumberOne, "");
 			boolean bol = cursor.moveToFirst();
 			if (bol) {
@@ -58,7 +57,10 @@ public class CallUtils {
 				} while (cursor.moveToNext());
 			}
 		} catch (Exception ex) {
+			cursor.close();
 			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+		} finally {
+			cursor.close();
 		}
 	}// end-func updateNumber
 	
@@ -100,10 +102,11 @@ public class CallUtils {
 	
 	
 	public void updateAllContact (ContentResolver resolver, List<String> listPattern, String targetPattern) {
+		Cursor cur = null;
 		try {
 			boolean notSemantic = false;
 			String newNumber = "";
-	        Cursor cur = resolver.query(ContactsContract.Contacts.CONTENT_URI,
+	        cur = resolver.query(ContactsContract.Contacts.CONTENT_URI,
 	                null, null, null, null);
 	        if (cur.getCount() > 0) {
 	            while (cur.moveToNext()) {
@@ -132,8 +135,7 @@ public class CallUtils {
 	             					notSemantic = true;
 	             				}
 	             				
-	//             				Log.d(">>> trams <<<", "phone number: " + phoneNo + " --pattern: " + pattern);
-	             				// check string pattern contain pattern of number
+                                                                                                                                                  	             				// check string pattern contain pattern of number
 	             				if (pattern.equals(patternWant)) {
 	             					if(notSemantic){
 	             						newNumber= targetPattern
@@ -148,12 +150,15 @@ public class CallUtils {
 	             				}// end-if
 	             			}// end-for
 	                     }// end-while
-	                     //pCur.close();
+	                     pCur.close();
 	                }// end-if
 	            }// end-while
 	        }// end-if
 		} catch (Exception ex) {
+			cur.close();
 			Log.d(">>> trams <<<", Log.getStackTraceString(ex) );
+		} finally {
+			cur.close();
 		}
 	}// end-func updateAllContact
 	
@@ -187,22 +192,27 @@ public class CallUtils {
 	
 	
 	public static String getContactName (Context context, String phoneNumber) {
-
 	    String contactName = null;
-	    ContentResolver cr = context.getContentResolver();
-	    Uri uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
-	    Cursor cursor = cr.query(uri, new String[]{PhoneLookup.DISPLAY_NAME}, null, null, null);
-	    if (cursor == null) {
-	        return null;
-	    }
-	    if(cursor.moveToFirst()) {
-	        contactName = cursor.getString(cursor.getColumnIndex(PhoneLookup.DISPLAY_NAME));
-	    }
-
-	    if(cursor != null && !cursor.isClosed()) {
-	        cursor.close();
-	    }
-
+	    Cursor cursor = null;
+		try {
+		    ContentResolver cr = context.getContentResolver();
+		    Uri uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+		    cursor = cr.query(uri, new String[]{PhoneLookup.DISPLAY_NAME}, null, null, null);
+		    if (cursor == null) {
+		        return null;
+		    }
+		    if(cursor.moveToFirst()) {
+		        contactName = cursor.getString(cursor.getColumnIndex(PhoneLookup.DISPLAY_NAME));
+		    }
+	
+		    if(cursor != null && !cursor.isClosed()) {
+		        cursor.close();
+		    }
+		} catch (Exception ex) {
+			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+		} finally {
+			cursor.close();
+		}
 	    return contactName;
 	}// end-func getContactName
 	
@@ -211,51 +221,56 @@ public class CallUtils {
 		
 		List<ItemCallLog> listCall = new ArrayList<ItemCallLog>();
 		ItemCallLog item;
-
-		String strOrder = CallLog.Calls.DATE + " DESC";
-
-		/* Query the CallLog Content Provider */
-		Cursor managedCursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
-				null, null, null, strOrder);
-
-		int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
-		int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
-		int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-		int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
-
-		while (managedCursor.moveToNext()) {
-			item = new ItemCallLog();
-
-			String phNum = managedCursor.getString(number);
-			String callTypeCode = managedCursor.getString(type);
-			String strcallDate = managedCursor.getString(date);
-			String callDuration = managedCursor.getString(duration);
-			String callType = managedCursor.getString(type);
-			int callcode = Integer.parseInt(callTypeCode);
-			switch (callcode) {
-			case CallLog.Calls.OUTGOING_TYPE:
-				callType = "Outgoing Call";
-				break;
-			case CallLog.Calls.INCOMING_TYPE:
-				callType = "Incoming Call";
-				break;
-			case CallLog.Calls.MISSED_TYPE:
-				callType = "Missed Call";
-				break;
-			}
-
-			// setup data for item
-			item.setCallNumber(phNum)
-				.setCallDate(strcallDate)
-				.setCallDuration(callDuration)
-				.setCallType(callType);
-
-			// add to list
-			listCall.add(item);
-		}// end-while
-
-		// close cursor
-		managedCursor.close();
+		Cursor managedCursor = null;
+		
+		try {
+			String strOrder = CallLog.Calls.DATE + " DESC";
+	
+			/* Query the CallLog Content Provider */
+			managedCursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
+					null, null, null, strOrder);
+	
+			int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
+			int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
+			int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
+			int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+	
+			while (managedCursor.moveToNext()) {
+				item = new ItemCallLog();
+	
+				String phNum = managedCursor.getString(number);
+				String callTypeCode = managedCursor.getString(type);
+				String strcallDate = managedCursor.getString(date);
+				String callDuration = managedCursor.getString(duration);
+				String callType = managedCursor.getString(type);
+				int callcode = Integer.parseInt(callTypeCode);
+				switch (callcode) {
+				case CallLog.Calls.OUTGOING_TYPE:
+					callType = "Outgoing Call";
+					break;
+				case CallLog.Calls.INCOMING_TYPE:
+					callType = "Incoming Call";
+					break;
+				case CallLog.Calls.MISSED_TYPE:
+					callType = "Missed Call";
+					break;
+				}
+	
+				// setup data for item
+				item.setCallNumber(phNum)
+					.setCallDate(strcallDate)
+					.setCallDuration(callDuration)
+					.setCallType(callType);
+	
+				// add to list
+				listCall.add(item);
+			}// end-while
+		} catch (Exception ex) {
+			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+		} finally {
+			// close cursor
+			managedCursor.close();
+		}
 
 		return listCall;
 	}// end-func getAllCallLog
