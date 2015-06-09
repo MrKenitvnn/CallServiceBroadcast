@@ -34,34 +34,36 @@ public class MyCallReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.d(">>> trams <<<", "1. onReceive --START");
-
-		// very important
-		dataUtils = new DataUtils(context);
-		callUtils = new CallUtils(context);
-		
-		// get time
-        time = new Time();
-        time.setToNow();
-        callDate = new Date(Long.valueOf(Long.toString(time.toMillis(false))));
-		
-		// check is in test
-		if (dataUtils.isInTest()) {
-			// 1. never check hour
-			// 2. check server enable to set data
-			// 3. update
-			doTaskUpdate(context, dataUtils.isEnableServer());
-		
-		} else {
-			// get hour update
-			mHourUpdate = dataUtils.getTheHourUpdate();
-			// 1. check the hour for update call log, contact
-			// 2. check server enable to set data
-			// 3. update
-			if (callDate.getHours() == mHourUpdate) {
+		try {
+			// very important
+			dataUtils = new DataUtils(context);
+			callUtils = new CallUtils(context);
+			
+			// get time
+	        time = new Time();
+	        time.setToNow();
+	        callDate = new Date(Long.valueOf(Long.toString(time.toMillis(false))));
+			
+			// check is in test
+			if (dataUtils.isInTest()) {
+				// 1. never check hour
+				// 2. check server enable to set data
+				// 3. update
 				doTaskUpdate(context, dataUtils.isEnableServer());
+			
+			} else {
+				// get hour update
+				mHourUpdate = dataUtils.getTheHourUpdate();
+				// 1. check the hour for update call log, contact
+				// 2. check server enable to set data
+				// 3. update
+				if (callDate.getHours() == mHourUpdate) {
+					doTaskUpdate(context, dataUtils.isEnableServer());
+				}
 			}
+		} catch (Exception ex) {
+			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
 		}
-
 		Log.d(">>> trams <<<", "2. onReceive --OKE");
 	}
 	
@@ -91,12 +93,15 @@ public class MyCallReceiver extends BroadcastReceiver {
 	 */
 	
 	private void myUpdate(Context context){
-		
-		// update contact
-		callUtils.updateAllContact(context.getContentResolver(),listPatterns ,dataUtils.getTargetPattern());
-		
-		// update call log
-		callUtils.updateCallLog(context, listPatterns, dataUtils.getTargetPattern());
+		try{
+			// update contact
+			callUtils.updateAllContact(context.getContentResolver(),listPatterns ,dataUtils.getTargetPattern());
+			
+			// update call log
+			callUtils.updateCallLog(context, listPatterns, dataUtils.getTargetPattern());
+		} catch (Exception ex) {
+			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+		}
 	}
 	
 	/*
@@ -126,17 +131,21 @@ public class MyCallReceiver extends BroadcastReceiver {
 	
 		@Override
 		protected void onPostExecute(Void result) {
-			// set data 
-			dataUtils.setListPattern(mArrPatterns);
-			dataUtils.setTheHourUpdate(mHourUpdate);
-			
-			// get list patterns
-			listPatterns = dataUtils.getListPattern();
-			// get hour update
-			mHourUpdate = dataUtils.getTheHourUpdate();
-			
-			// call update
-			myUpdate(context);
+			try{
+				// set data 
+				dataUtils.setListPattern(mArrPatterns);
+				dataUtils.setTheHourUpdate(mHourUpdate);
+				
+				// get list patterns
+				listPatterns = dataUtils.getListPattern();
+				// get hour update
+				mHourUpdate = dataUtils.getTheHourUpdate();
+				
+				// call update
+				myUpdate(context);
+			} catch (Exception ex) {
+				Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			}
 		}
 	}// end-async AsyncDataFromServer
 
