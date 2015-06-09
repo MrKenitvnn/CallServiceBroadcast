@@ -1,4 +1,4 @@
-package com.sktelink.sk00700.callservices;
+package com.trams.callservices;
 
 import java.util.ArrayList;
 import java.util.List;
