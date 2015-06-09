@@ -1,4 +1,5 @@
 in onCreate
+
 // set data
 		DataUtils dataUtils = new DataUtils(getApplicationContext());
 		dataUtils.setListPattern(new String[]{"001", "011", "002"});
@@ -14,7 +15,9 @@ in onCreate
 		// finally -- start
 		MyCallReceiver.startService(this);
 		
+		
 in Manifest:
+
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
