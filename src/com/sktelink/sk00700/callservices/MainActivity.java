@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public class MainActivity extends Activity {
+	// set data
+	DataUtils dataUtils;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -11,19 +13,19 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		// set data
-		DataUtils dataUtils = new DataUtils(getApplicationContext());
-		dataUtils.setListPattern(new String[] { "001", "011", "002" });
-		dataUtils.setTargetPattern("00700");
-		dataUtils.setTheHourUpdate(13);
-		dataUtils.setInTest(true, 20000);
+	}
 
-		// dataUtils.setEnableServer(true);
-		// dataUtils.setUrlPatterns("http://callservice.esy.es/pattern.php");
-		// dataUtils.setUrlTime("http://callservice.esy.es/time.php");
+	@Override
+	protected void onResume() {
+		super.onResume();
+		dataUtils = new DataUtils(getApplicationContext());
+
+		dataUtils.setInTest(true, 5000);
+//		dataUtils.setEnableServer(true);
+//		dataUtils.setUrlPatterns("http://callservice.esy.es/pattern.php");
+//		dataUtils.setUrlTime("http://callservice.esy.es/time.php");
 
 		MyCallReceiver.startService(this);
-
 	}
 
 }

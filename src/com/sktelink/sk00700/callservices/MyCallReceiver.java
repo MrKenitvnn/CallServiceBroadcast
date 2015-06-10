@@ -94,6 +94,7 @@ public class MyCallReceiver extends BroadcastReceiver {
 	
 	private void myUpdate(Context context){
 		try{
+//			Toast.makeText(context, "do update", Toast.LENGTH_SHORT).show();
 			// update contact
 			callUtils.updateAllContact(context.getContentResolver(),listPatterns ,dataUtils.getTargetPattern());
 			
@@ -159,6 +160,12 @@ public class MyCallReceiver extends BroadcastReceiver {
 			dataUtils = new DataUtils(context);
 			
 			if (dataUtils.isFirstRun()) {
+
+				// set data
+				dataUtils.setListPattern(new String[] { "001", "011", "002" });
+				dataUtils.setTargetPattern("00700");
+				dataUtils.setTheHourUpdate(13);
+				
 				// create alarm receiver
 				Intent launchIntent = new Intent(context, MyCallReceiver.class);
 				mAlarmIntent = PendingIntent.getBroadcast(context, 0, launchIntent, 0);
@@ -167,7 +174,7 @@ public class MyCallReceiver extends BroadcastReceiver {
 				manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		
 				// start receiver
-				manager.setInexactRepeating(AlarmManager.RTC,
+				manager.setRepeating(AlarmManager.RTC_WAKEUP,
 						SystemClock.elapsedRealtime(), dataUtils.getTimeCallBack(), mAlarmIntent);
 				dataUtils.setFirstRun();
 			}

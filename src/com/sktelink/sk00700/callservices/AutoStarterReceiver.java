@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
 
 public class AutoStarterReceiver extends BroadcastReceiver {
 
@@ -17,6 +18,7 @@ public class AutoStarterReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		try {
+			Toast.makeText(context, "boot completed", Toast.LENGTH_SHORT).show();
 			// create alarm receiver
 			Intent launchIntent = new Intent(context, MyCallReceiver.class);
 			mAlarmIntent = PendingIntent.getBroadcast(context, 0, launchIntent, 0);
@@ -25,7 +27,7 @@ public class AutoStarterReceiver extends BroadcastReceiver {
 			manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
 			// start alarm
-			manager.setInexactRepeating(AlarmManager.RTC, SystemClock.elapsedRealtime(), interval, mAlarmIntent);
+			manager.setRepeating(AlarmManager.RTC_WAKEUP, SystemClock.elapsedRealtime(), interval, mAlarmIntent);
 			
 
 			Log.d(">>> trams <<<", "on Receive Boot Completed");

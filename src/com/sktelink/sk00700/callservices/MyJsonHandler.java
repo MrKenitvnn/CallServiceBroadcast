@@ -16,7 +16,7 @@ import android.util.Log;
 
 public class MyJsonHandler {
 	
-	public static int	TIME_OUT	 = 5000;
+	public static int	TIME_OUT	 = 3000;
 	
 	public static String TAG_PATTERN = "pattern";
 	public static String TAG_TIME 	 = "time";
