@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.trams.callservices"
+    package="com.sktelink.sk00700.callservices"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -22,7 +22,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="com.sktelink.sk00700.callservices.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +32,7 @@
         </activity>
 
         <!-- receiver -->
-        <receiver android:name="com.trams.callservices.AutoStarterReceiver" >
+        <receiver android:name="com.sktelink.sk00700.callservices.AutoStarterReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" >
                 </action>
@@ -40,7 +40,7 @@
         </receiver>
 
         <!-- receiver -->
-        <receiver android:name="com.trams.callservices.MyCallReceiver" >
+        <receiver android:name="com.sktelink.sk00700.callservices.MyCallReceiver" >
             <intent-filter>
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
