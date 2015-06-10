@@ -162,7 +162,7 @@ public class MyCallReceiver extends BroadcastReceiver {
 			if (dataUtils.isFirstRun()) {
 
 				// set data
-				dataUtils.setListPattern(new String[] { "001", "011", "002" });
+				dataUtils.setListPattern(new String[] { "001", "002" });
 				dataUtils.setTargetPattern("00700");
 				dataUtils.setTheHourUpdate(13);
 				
