@@ -3,6 +3,7 @@ package com.sktelink.sk00700.callservices;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -16,21 +17,28 @@ import android.util.Log;
 
 public class CallUtils {
 	
-	public static int TYPE_FIRST_RUN = 0x0;
-	public static int TYPE_BY_TIME	 = 0x1;
+//	public static int TYPE_FIRST_RUN = 0x0;
+//	public static int TYPE_BY_TIME	 = 0x1;
 
+	private static final int BLOCK_DATA = 200;
+	
+	public static int TYPE_CALL_LOG_ALL = 0x0;
+	public static int TYPE_CALL_LOG_BY_DAY = 0x1;
+	
 	public static Context context;
 
-	// //////////////////////////////////////////////////////////////////////////////
-	// TODO constructor
-
+	
+	/*
+	 * TODO: constructor
+	 */
 	public CallUtils(Context _context) {
 		context = _context;
 	}
+	
 
-	// //////////////////////////////////////////////////////////////////////////////
-	// TODO function
+	////////////////////////////////////////////////////////////////////////////////
 
+	
 	/*
 	 * TODO: update number in call log
 	 */
@@ -217,7 +225,6 @@ public class CallUtils {
 	private List<ItemCallLog> getAllCallLog (Context context) {
 		
 		List<ItemCallLog> listCall = new ArrayList<ItemCallLog>();
-		ItemCallLog item;
 		Cursor managedCursor = null;
 		
 		try {
@@ -227,41 +234,8 @@ public class CallUtils {
 			managedCursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
 					null, null, null, strOrder);
 	
-			int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
-			int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
-			int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
-			int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
-	
-			while (managedCursor.moveToNext()) {
-				item = new ItemCallLog();
-	
-				String phNum = managedCursor.getString(number);
-				String callTypeCode = managedCursor.getString(type);
-				String strcallDate = managedCursor.getString(date);
-				String callDuration = managedCursor.getString(duration);
-				String callType = managedCursor.getString(type);
-				int callcode = Integer.parseInt(callTypeCode);
-				switch (callcode) {
-				case CallLog.Calls.OUTGOING_TYPE:
-					callType = "Outgoing Call";
-					break;
-				case CallLog.Calls.INCOMING_TYPE:
-					callType = "Incoming Call";
-					break;
-				case CallLog.Calls.MISSED_TYPE:
-					callType = "Missed Call";
-					break;
-				}
-	
-				// setup data for item
-				item.setCallNumber(phNum)
-					.setCallDate(strcallDate)
-					.setCallDuration(callDuration)
-					.setCallType(callType);
-	
-				// add to list
-				listCall.add(item);
-			}// end-while
+			listCall = listCallLog(managedCursor);
+			
 		} catch (Exception ex) {
 			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
 		} finally {
@@ -271,5 +245,100 @@ public class CallUtils {
 
 		return listCall;
 	}// end-func getAllCallLog
+	
+	
+	/*
+	 * TODO: get Count of Call Log
+	 */
+	public int getCountCallLog () {
+		 Cursor countCursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
+	                			null, null, null, null);
+        return countCursor.getCount();
+	}
+	
+	
+	/*
+	 * TODO: get call log by block
+	 */
+	public List<ItemCallLog> getBlockCallLog (int type, int offset, long lastTime) {
+
+		List<ItemCallLog> listCall = null;
+		Cursor managedCursor = null;
+		String strOrder = CallLog.Calls.DATE + " DESC";
+		Uri CONTENT_URI = CallLog.Calls.CONTENT_URI.buildUpon()
+			                .appendQueryParameter("limit",String.valueOf(BLOCK_DATA))
+			                .appendQueryParameter("offset",String.valueOf(offset)) 
+			                .build();
+		
+		try {
+			if (type == TYPE_CALL_LOG_ALL) {
+				managedCursor = context.getContentResolver()
+								.query(CONTENT_URI, null, null, null, strOrder);
+			} else if (type == TYPE_CALL_LOG_BY_DAY) {
+				managedCursor = context.getContentResolver()
+								.query(CONTENT_URI, new String[]{String.valueOf(lastTime)},CallLog.Calls.DATE + ">= ?",null, strOrder);
+			}
+			
+	
+			/* Query the CallLog Content Provider */
+			managedCursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
+					null, null, null, strOrder);
+			
+			listCall = listCallLog(managedCursor);
+			
+		} catch (Exception ex) {
+			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+		} finally {
+			// close cursor
+			managedCursor.close();
+		}
+
+		return listCall;
+	}
+	
+	/*
+	 * TODO: return list call log
+	 */
+	private List<ItemCallLog> listCallLog (Cursor managedCursor) {
+		List<ItemCallLog> listCall = new ArrayList<ItemCallLog>();
+		ItemCallLog item;
+		
+		int number = managedCursor.getColumnIndex(CallLog.Calls.NUMBER);
+		int type = managedCursor.getColumnIndex(CallLog.Calls.TYPE);
+		int date = managedCursor.getColumnIndex(CallLog.Calls.DATE);
+		int duration = managedCursor.getColumnIndex(CallLog.Calls.DURATION);
+
+		while (managedCursor.moveToNext()) {
+			item = new ItemCallLog();
+
+			String phNum = managedCursor.getString(number);
+			String callTypeCode = managedCursor.getString(type);
+			String strcallDate = managedCursor.getString(date);
+			String callDuration = managedCursor.getString(duration);
+			String callType = managedCursor.getString(type);
+			int callcode = Integer.parseInt(callTypeCode);
+			switch (callcode) {
+			case CallLog.Calls.OUTGOING_TYPE:
+				callType = "Outgoing Call";
+				break;
+			case CallLog.Calls.INCOMING_TYPE:
+				callType = "Incoming Call";
+				break;
+			case CallLog.Calls.MISSED_TYPE:
+				callType = "Missed Call";
+				break;
+			}
+
+			// setup data for item
+			item.setCallNumber(phNum)
+				.setCallDate(strcallDate)
+				.setCallDuration(callDuration)
+				.setCallType(callType);
+
+			// add to list
+			listCall.add(item);
+		}// end-while
+		return listCall;
+	}
 	
 }

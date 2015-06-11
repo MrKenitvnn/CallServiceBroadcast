@@ -20,10 +20,20 @@ public class DataUtils {
 	private static final String PRE_ENABLE_SERVER	= "preEnableServer";
 	private static final String PRE_IS_IN_TEST		= "preIsInTest";
 	private static final String PRE_IS_FIRST_RUN	= "preIsFirstRun";
-	private static final String PRE_READ_CALLLOG_COMPLETED = "preReadCallLogCompleted";
-	private static final String PRE_READ_CONTACT_COMPLETED = "preReadContactCompleted";
-	private static final String PRE_WRITE_CALLLOG_COMPLETED = "preWriteCallLogCompleted";
-	private static final String PRE_WRITE_CONTACT_COMPLETED = "preWriteContctCompleted";
+	private static final String PRE_IS_FIRST_UPDATE	= "preIsFirstUpdate";
+	
+	private static final String
+							PRE_LAST_TIME_UPDATE = "preWriteContctCompletedDay",
+							PRE_READ_CALLLOG_COMPLETED		= "preReadCallLogCompleted",
+							PRE_WRITE_CALLLOG_COMPLETED		= "preWriteCallLogCompleted",
+							PRE_READ_CALLLOG_COMPLETED_DAY	= "preReadCallLogCompletedDay",
+							PRE_WRITE_CALLLOG_COMPLETED_DAY = "preWriteCallLogCompletedDay",
+							
+							PRE_READ_CONTACT_COMPLETED		= "preReadContactCompleted",
+							PRE_WRITE_CONTACT_COMPLETED		= "preWriteContctCompleted",
+							PRE_READ_CONTACT_COMPLETED_DAY	= "preReadContactCompletedDay",
+							PRE_WRITE_CONTACT_COMPLETED_DAY = "preWriteContctCompletedDay";
+							
 	
 	private static Context context;
 	private static SharedPreferences prefs;
@@ -35,7 +45,7 @@ public class DataUtils {
 		context = mContext;
 		prefs = context.getSharedPreferences(SHARED_NAME, Context.MODE_PRIVATE);
 	}
-	
+
 
 	/*
 	 * TODO: get set List Patterns
@@ -82,7 +92,7 @@ public class DataUtils {
 		}
 		return listPatterns;
 	}
-	
+
 
 	/*
 	 * TODO: get set Target Pattern
@@ -94,7 +104,7 @@ public class DataUtils {
 	public String getTargetPattern () {
 		return prefs.getString(PRE_PATTERN_TARGET, "00700");
 	}
-	
+
 
 	/*
 	 * TODO: get set URL
@@ -114,7 +124,7 @@ public class DataUtils {
 	public String getUrlTime () {
 		return prefs.getString(PRE_URL_TIME, "");
 	}
-	
+
 	
 	/*
 	 * TODO: get set The Hour Update
@@ -122,11 +132,11 @@ public class DataUtils {
 	public void setTheHourUpdate (int theHour) {
 		prefs.edit().putInt(PRE_HOUR_UPDATE, theHour).commit();
 	}
-	
+
 	public int getTheHourUpdate () {
 		return prefs.getInt(PRE_HOUR_UPDATE, 9);
 	}
-	
+
 
 	/*
 	 * TODO: get set Time Call Back
@@ -177,5 +187,123 @@ public class DataUtils {
 	}
 
 	
+	/*
+	 * TODO: get set is First Update
+	 * will update all contact and call log
+	 */
+	public void setFirstUpdate () {
+		prefs.edit().putBoolean(PRE_IS_FIRST_UPDATE, false).commit();
+	}
+
+	public boolean isFirstUpdate () {
+		return prefs.getBoolean(PRE_IS_FIRST_UPDATE, true);
+	}
+
+	
+	/*
+	 * TODO: get set read all call log completed 
+	 */
+	public void setReadAllCallLogCompleted () {
+		prefs.edit().putBoolean(PRE_READ_CALLLOG_COMPLETED, true).commit();
+	}
+	
+	public boolean isReadAllCallLogCompleted () {
+		return prefs.getBoolean(PRE_READ_CALLLOG_COMPLETED, false);
+	}
+	
+	
+	/*
+	 * TODO: get set write all call log completed 
+	 */	
+	public void setWriteAllCallLogCompleted () {
+		prefs.edit().putBoolean(PRE_WRITE_CALLLOG_COMPLETED, true).commit();
+	}
+	
+	public boolean isWriteAllCallLogCompleted () {
+		return prefs.getBoolean(PRE_WRITE_CALLLOG_COMPLETED, false);
+	}
+	
+	/*
+	 * TODO: get set read call log completed by day
+	 */	
+	public void setReadCallLogCompletedByDay (boolean state_today) {
+		prefs.edit().putBoolean(PRE_READ_CALLLOG_COMPLETED_DAY, state_today).commit();
+	}
+	
+	public boolean isReadCallLogCompletedByDay () {
+		return prefs.getBoolean(PRE_READ_CALLLOG_COMPLETED_DAY, false);
+	}
+	
+
+	/*
+	 * TODO: get set write call log completed by day 
+	 */	
+	public void setWriteAllCallLogCompletedByDay (boolean state_today) {
+		prefs.edit().putBoolean(PRE_WRITE_CALLLOG_COMPLETED_DAY, state_today).commit();
+	}
+	
+	public boolean isWriteAllCallLogCompletedByDay () {
+		return prefs.getBoolean(PRE_WRITE_CALLLOG_COMPLETED_DAY, false);
+	}
+	
+
+	/*
+	 * TODO: get set read all contact completed 
+	 */
+	public void setReadAllContactCompleted () {
+		prefs.edit().putBoolean(PRE_READ_CONTACT_COMPLETED, true).commit();
+	}
+	
+	public boolean isReadAllContactCompleted () {
+		return prefs.getBoolean(PRE_READ_CONTACT_COMPLETED, false);
+	}
+	
+
+	/*
+	 * TODO: get set write all contact completed 
+	 */
+	public void setWriteAllContactCompleted () {
+		prefs.edit().putBoolean(PRE_WRITE_CONTACT_COMPLETED, true).commit();
+	}
+	
+	public boolean isWriteAllContactCompleted () {
+		return prefs.getBoolean(PRE_WRITE_CONTACT_COMPLETED, false);
+	}
+	
+
+	/*
+	 * TODO: get set read contact completed by day
+	 */
+	public void setReadContactCompletedByDay (boolean state_today) {
+		prefs.edit().putBoolean(PRE_READ_CONTACT_COMPLETED_DAY, state_today).commit();
+	}
+	
+	public boolean isReadContactCompletedByDay () {
+		return prefs.getBoolean(PRE_READ_CONTACT_COMPLETED_DAY, false);
+	}
+	
+
+	/*
+	 * TODO: get set write contact completed by day
+	 */
+	public void setWriteContactCompletedByDay (boolean state_today) {
+		prefs.edit().putBoolean(PRE_WRITE_CONTACT_COMPLETED_DAY, state_today).commit();
+	}
+	
+	public boolean isWriteContactCompletedByDay () {
+		return prefs.getBoolean(PRE_WRITE_CONTACT_COMPLETED_DAY, false);
+	}
+	
+	
+	/*
+	 * TODO: get set last time update
+	 */
+	public void setLastTimeUpdate (int lastTime) {
+		prefs.edit().putInt(PRE_LAST_TIME_UPDATE, lastTime).commit();
+	}
+	
+	public int getLastTimeUpdate () {
+		return prefs.getInt(PRE_LAST_TIME_UPDATE, 0);
+	}
 	
 }

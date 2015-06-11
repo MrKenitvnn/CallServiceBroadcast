@@ -1,7 +1,9 @@
 package com.sktelink.sk00700.callservices;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CallLog;
 
 public class MainActivity extends Activity {
 	// set data
@@ -13,6 +15,8 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+
+		
 	}
 
 	

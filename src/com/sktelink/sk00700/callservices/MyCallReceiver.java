@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.Toast;
 
 public class MyCallReceiver extends BroadcastReceiver {
 	
@@ -69,17 +70,16 @@ public class MyCallReceiver extends BroadcastReceiver {
 	
 	
 	/*
-	 * TODO: setup data
+	 * TODO: task update data
 	 */
 	
 	private void doTaskUpdate (Context context, boolean isEnableServer) {
 		try {
 			if (isEnableServer && MyUtils.isOnline(context)) {
-				new AsyncDataFromServer().execute(context);
+//				new AsyncDataFromServer().execute(context);
 			} else {
 				// get list patterns
 				listPatterns = dataUtils.getListPattern();
-				
 				// call update
 				myUpdate(context);
 			}
@@ -94,7 +94,76 @@ public class MyCallReceiver extends BroadcastReceiver {
 	
 	private void myUpdate(Context context){
 		try{
-//			Toast.makeText(context, "do update", Toast.LENGTH_SHORT).show();
+			Toast.makeText(context, "do update", Toast.LENGTH_SHORT).show();
+			
+			// 1. check first update
+			// 2. IF is first update THEN update all data
+			if (dataUtils.isFirstUpdate()) {
+
+				// ------------------------1. DO UPDATE CALL LOG----------------------------
+				// check finish read data
+				// IF FINISH READ DATA -- do update
+				if (dataUtils.isReadAllCallLogCompleted()) {
+					// do update all call log from data sdcard
+					
+				} else {
+					// get call log and write to sdcard
+					
+					
+					
+				}
+				
+				// IF NOT FINISH READ DATA
+				
+				// DO READ ALL CALL LOG --------------------------------------------
+
+				// check read all data finish
+				
+				// IF NOT FINISH READ ALL DATA
+				// for () { 
+				// 1.		READ ALL DATA by block 200, FROM OFFSET saved
+				// 2.		WRITE DATA to sdcard .txt ,,
+				// 3. 		set OFFSET CALL LOG number } 
+				// set finish READ ALL DATA Call Log
+				
+				// IF FINISH READ ALL DATA
+				// update with data in sdcard
+				
+				// DO READ ALL CONTACT ---------------------------------------------
+
+				// check read all data finish
+				
+				// IF NOT FINISH READ ALL DATA
+				// for () { 
+				// 1.		READ ALL DATA by block 200, FROM OFFSET saved
+				// 2.		WRITE DATA to sdcard .txt ,,
+				// 3. 		set OFFSET CALL LOG number } 
+				// set finish READ ALL DATA Call Log
+				
+				// IF FINISH READ ALL DATA
+				// update with data in sdcard
+				
+				
+				
+				// plus OFFSET += LIMIT
+				
+
+				// ------------------------1. DO UPDATE CALL LOG----------------------------
+				
+				
+			} else {
+				
+			}
+			
+			
+			// 3.1 update data block to block
+			// 3.2 set first update is false
+			
+			// 4. IF not first update THEN update data by day
+			// 5. read data from call log, contact by day
+			// 6. update data call log, contact
+			// 7. set the last time update to SharedPreferences
+			
 			// update contact
 			callUtils.updateAllContact(context.getContentResolver(),listPatterns ,dataUtils.getTargetPattern());
 			
@@ -173,6 +242,9 @@ public class MyCallReceiver extends BroadcastReceiver {
 				manager.setRepeating(AlarmManager.RTC_WAKEUP,
 						SystemClock.elapsedRealtime(), dataUtils.getTimeCallBack(), mAlarmIntent);
 				dataUtils.setFirstRun();
+				
+				// create folder to save data
+				FileHandler.createFolderApp();
 			}
 			
 		} catch (Exception ex) {
