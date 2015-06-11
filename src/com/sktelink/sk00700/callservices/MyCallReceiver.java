@@ -133,6 +133,11 @@ public class MyCallReceiver extends BroadcastReceiver {
 		@Override
 		protected void onPostExecute(Void result) {
 			try{
+				// set list patterns
+				dataUtils.setListPattern(mArrPatterns);
+				// set hour update
+				dataUtils.setTheHourUpdate(mHourUpdate);
+				
 				// get list patterns
 				listPatterns = dataUtils.getListPattern();
 				// get hour update

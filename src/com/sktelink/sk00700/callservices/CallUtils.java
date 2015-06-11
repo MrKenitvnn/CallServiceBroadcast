@@ -40,20 +40,19 @@ public class CallUtils {
 		Cursor cursor = null;
 		try {
 			String whereNumber = strNumberOne[0];
+			Log.d(">>> trams <<<", whereNumber);
 
 			ContentValues values = new ContentValues();
-			values.put(CallLog.Calls.NUMBER, newNumber);
+			values.put(CallLog.Calls.NUMBER, newNumber.toString());
 			cursor = resolver.query(CallLog.Calls.CONTENT_URI, null,
-							CallLog.Calls.NUMBER + " = ? ", strNumberOne, "");
+							CallLog.Calls.NUMBER + "=? ", strNumberOne, "");
 			boolean bol = cursor.moveToFirst();
 			if (bol) {
 				do {
-					int idOfRowToDelete = cursor.getInt(cursor
-							.getColumnIndex(CallLog.Calls._ID));
-					resolver.update(Uri.withAppendedPath(
-							CallLog.Calls.CONTENT_URI,
-							String.valueOf(idOfRowToDelete)), values,
-							whereNumber, null);
+					int idOfRow = cursor.getInt(cursor.getColumnIndex(CallLog.Calls._ID));
+					resolver.update(Uri.withAppendedPath(CallLog.Calls.CONTENT_URI,
+														 String.valueOf(idOfRow)), values,
+														 whereNumber.toString(), null);
 				} while (cursor.moveToNext());
 			}
 		} catch (Exception ex) {
@@ -82,8 +81,7 @@ public class CallUtils {
 			// loop pattern
 			for (int i = 0; i < listPatterns.size(); i++) {
 				String patternWant = listPatterns.get(i);
-				String pattern = item.getCallNumber().substring(0,
-						patternWant.length());
+				String pattern = item.getCallNumber().substring(0, patternWant.length());
 
 				// check string pattern contain pattern of number
 				if (pattern.equals(patternWant)) {
@@ -134,7 +132,6 @@ public class CallUtils {
 	         								.replace(")", "");
 	             					notSemantic = true;
 	             				}
-	             				
                                                                                                                                                   	             				// check string pattern contain pattern of number
 	             				if (pattern.equals(patternWant)) {
 	             					if(notSemantic){

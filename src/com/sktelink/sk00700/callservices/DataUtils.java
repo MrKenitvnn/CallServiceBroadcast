@@ -20,10 +20,13 @@ public class DataUtils {
 	private static final String PRE_ENABLE_SERVER	= "preEnableServer";
 	private static final String PRE_IS_IN_TEST		= "preIsInTest";
 	private static final String PRE_IS_FIRST_RUN	= "preIsFirstRun";
+	private static final String PRE_READ_CALLLOG_COMPLETED = "preReadCallLogCompleted";
+	private static final String PRE_READ_CONTACT_COMPLETED = "preReadContactCompleted";
+	private static final String PRE_WRITE_CALLLOG_COMPLETED = "preWriteCallLogCompleted";
+	private static final String PRE_WRITE_CONTACT_COMPLETED = "preWriteContctCompleted";
 	
 	private static Context context;
 	private static SharedPreferences prefs;
-	
 
 	/*
 	 * TODO: constructor
