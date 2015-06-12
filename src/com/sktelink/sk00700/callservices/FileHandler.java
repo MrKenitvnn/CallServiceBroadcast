@@ -9,35 +9,45 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
 public class FileHandler {
 	
-	private static final String FOLDER_ROOT		= "data00700";
-	private static final String FOLDER_CALL_LOG = "callLog";
-	private static final String FOLDER_CONTACT	= "contact";
+	public static final String FOLDER_ROOT		= "data00700";
+	public static final String FOLDER_CALL_LOG = "callLog";
+	public static final String FOLDER_CONTACT	= "contact";
 	
 	public static final int TYPE_CALL_LOG = 0x0;
 	public static final int TYPE_CONTACT  = 0x1;
 	
-	public static String
-					PATH_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath()
-								+ File.separator + FOLDER_ROOT + File.separator;
-	public static String
-					PATH_CALL_LOG = PATH_ROOT + FOLDER_CALL_LOG + File.separator,
-					PATH_CONTACT  = PATH_ROOT + FOLDER_CONTACT + File.separator;
+	private DataUtils dataUtils;
+	
+//	public static String
+//					PATH_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath()
+//								+ File.separator + FOLDER_ROOT + File.separator;
+//	public static String
+//					PATH_CALL_LOG = PATH_ROOT + FOLDER_CALL_LOG + File.separator,
+//					PATH_CONTACT  = PATH_ROOT + FOLDER_CONTACT + File.separator;
+	
+	public FileHandler(Context context) {
+		dataUtils = new DataUtils(context);
+	}
+	
 	
 	/*
 	 * TODO: 
 	 */
-	public static void createFolderApp () {
+	public void createFolderApp () {
+		
+		
 		
 		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 			Log.d("MyApp", "No SDCARD");
 		} else {
 			// root's app's folder
-			File directory = new File(PATH_ROOT);
+			File directory = new File(dataUtils.getRootPath());
 			if (directory.exists()) {
 				deleteBookFolder(directory);
 			}
@@ -45,11 +55,11 @@ public class FileHandler {
 			directory.mkdir();
 
 			// call log folder
-			File calllog = new File(PATH_CALL_LOG);
+			File calllog = new File(dataUtils.getRootPath() + FOLDER_CALL_LOG + "/" );
 			calllog.mkdir();
 
 			// contact folder
-			File contact = new File(PATH_CONTACT);
+			File contact = new File(dataUtils.getRootPath() + FOLDER_CONTACT + "/");
 			contact.mkdir();
 		}
 	}
@@ -80,15 +90,15 @@ public class FileHandler {
 	/*
 	 * TODO: write data
 	 */	
-	public static void writeData (String strData, String fileName, int type) {
+	public void writeData (String strData, String fileName, int type) {
 		String filePath = null;
 		OutputStreamWriter myOutWriter	= null;
 		FileOutputStream fOut			= null;
 		
 		if (type == TYPE_CALL_LOG) {
-			filePath = PATH_CALL_LOG + fileName; 
+			filePath = dataUtils.getRootPath() + FOLDER_CALL_LOG + "/" + fileName; 
 		} else if (type == TYPE_CONTACT) {
-			filePath = PATH_CONTACT + fileName;
+			filePath = dataUtils.getRootPath() + FOLDER_CONTACT + "/" + fileName;
 		}
 		
 		try {
@@ -115,12 +125,12 @@ public class FileHandler {
 	/*
 	 * TODO: delete file data
 	 */
-	public static boolean deleteFileFromSdcard(String fileName, int type){
+	public boolean deleteFileFromSdcard(String fileName, int type){
 		String filePath = null;
 		if (type == TYPE_CALL_LOG) {
-			filePath = PATH_CALL_LOG + fileName + "/"; 
+			filePath = dataUtils.getRootPath() + FOLDER_CALL_LOG + "/" + fileName + "/"; 
 		} else if (type == TYPE_CONTACT) {
-			filePath = PATH_CONTACT + fileName + "/";
+			filePath = dataUtils.getRootPath() + FOLDER_CONTACT + "/" + fileName + "/";
 		}
 		File file = new File(filePath);
 		boolean deleted = file.delete();
@@ -131,7 +141,7 @@ public class FileHandler {
 	/*
 	 * TODO: read data
 	 */
-	public static List<ItemCallLog> readFileCallLog(String fileName){
+	public List<ItemCallLog> readFileCallLog(String fileName){
 		List<ItemCallLog> listData = new ArrayList<ItemCallLog>();
 		ItemCallLog item = null;
 		
@@ -139,12 +149,8 @@ public class FileHandler {
 		BufferedReader br = null;
 		try {
 			String sCurrentLine;
-			file = new FileReader(PATH_CALL_LOG + fileName);
+			file = new FileReader(dataUtils.getRootPath() + FOLDER_CALL_LOG + "/" + fileName);
 			br = new BufferedReader(file);
-			
-			if (br.readLine() == null) {
-				return null;
-			}
 			
 			while ((sCurrentLine = br.readLine()) != null) {
 				
@@ -186,6 +192,5 @@ public class FileHandler {
 		}
 		return listFile;		
 	}
-	
 	
 }

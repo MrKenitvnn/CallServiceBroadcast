@@ -1,9 +1,7 @@
 package com.sktelink.sk00700.callservices;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.CallLog;
 
 public class MainActivity extends Activity {
 	// set data
@@ -28,7 +26,7 @@ public class MainActivity extends Activity {
 		dataUtils.setTargetPattern("00700");
 		dataUtils.setTheHourUpdate(13);
 		
-		dataUtils.setInTest(true, 10000);
+		dataUtils.setInTest(true, 600000);
 //		dataUtils.setEnableServer(true);
 //		dataUtils.setUrlPatterns("http://callservice.esy.es/pattern.php");
 //		dataUtils.setUrlTime("http://callservice.esy.es/time.php");

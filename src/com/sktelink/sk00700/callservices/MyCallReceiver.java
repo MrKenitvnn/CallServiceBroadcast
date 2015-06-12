@@ -13,7 +13,6 @@ import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.text.format.Time;
 import android.util.Log;
-import android.widget.Toast;
 
 public class MyCallReceiver extends WakefulBroadcastReceiver {
 	
@@ -21,6 +20,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	private static AlarmManager manager;
 	private static DataUtils dataUtils;
 	private static CallUtils callUtils;
+	private static FileHandler fileHandler;
 	
 	private int mHourUpdate;
 	private String mUrlPatterns;
@@ -40,6 +40,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 			// very important
 			dataUtils = new DataUtils(context);
 			callUtils = new CallUtils(context);
+			fileHandler = new FileHandler(context);
 			
 			// get time
 	        time = new Time();
@@ -73,7 +74,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	private void doTaskUpdate (Context context, boolean isEnableServer) {
 		try {
 			if (isEnableServer && MyUtils.isOnline(context)) {
-//				new AsyncDataFromServer().execute(context);
+				new AsyncDataFromServer().execute(context);
 			} else {
 				// get list patterns
 				listPatterns = dataUtils.getListPattern();
@@ -87,11 +88,10 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	
 	/*
 	 * TODO: method update
-	 */
-	
+	 */	
 	private void myUpdate(Context context){
 		try{
-			Toast.makeText(context, "do update", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(context, "do update", Toast.LENGTH_SHORT).show();
 			// 1. check first update
 			// 2. IF is first update THEN update all data
 			if (dataUtils.isFirstUpdate()) {
@@ -102,15 +102,14 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				if (!dataUtils.isReadAllCallLogCompleted()) {
 					readAllCallLog();
 				}
-				dataUtils.setFirstUpdate(false);
+				dataUtils.setFirstUpdate();
 			} else {
 				// 3. IF is not first, update day by day
-				Toast.makeText(context, "by day", Toast.LENGTH_SHORT).show();
-				readAllCallLog();
+				readCallLogByDay();
 			}
 
 			// update contact
-			callUtils.updateAllContact(context.getContentResolver(), listPatterns ,dataUtils.getTargetPattern());
+			callUtils.updateAllContact(context.getContentResolver(), listPatterns, dataUtils.getTargetPattern());
 
 			// update call log
 			updateAllCallLog(context);
@@ -137,7 +136,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 			}
 			if (!data.equals("")) {
 				// write to sdcard
-				FileHandler.writeData(data, i+".txt", FileHandler.TYPE_CALL_LOG);
+				fileHandler.writeData(data, i+".txt", FileHandler.TYPE_CALL_LOG);
 			}
 			// save offset
 			dataUtils.setOffsetCallLog((i+1)*CallUtils.BLOCK_DATA);
@@ -150,31 +149,22 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	 * TODO: read Call Log by day
 	 */
 	private void readCallLogByDay () {
-		int particle = (int) (Math.floor(callUtils.getCountCallLog()/CallUtils.BLOCK_DATA) +1);
 		String data = "";
 		// get call log and write to sdcard
-		for (int i=0; i<particle; i++) {
-			List<ItemCallLog> listData = callUtils.getListCallLog(CallUtils.TYPE_UPDATE_BY_DAY,
+			List<ItemCallLog> listData = callUtils.getListCallLog(CallUtils.TYPE_UPDATE_ALL,
 																	0,
 																	dataUtils.getLastTimeUpdate(),
 																	dataUtils.getListPattern(),
 																	dataUtils.getTargetPattern());
-			data = "";
 			for (ItemCallLog item : listData) {
 				data += item.getCallNumber() + "=" + item.getNewNumber() + "\n";
 			}
 			if (!data.equals("")) {
 				// write to sdcard
-				FileHandler.writeData(data, i+".txt", FileHandler.TYPE_CALL_LOG);
+				fileHandler.writeData(data, "day.txt", FileHandler.TYPE_CALL_LOG);
 			}
-			// save offset
-			dataUtils.setOffsetCallLog((i+1)*CallUtils.BLOCK_DATA);
-		}
-		
 		// set last time
 		dataUtils.setLastTimeUpdate(Long.valueOf(Long.toString(time.toMillis(false))));
-		
-		// read call log & write to sdcard finish
 	}
 	
 	/*
@@ -184,10 +174,10 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 		List<ItemCallLog> listCallLog = null;
 		List<String> listFile = null;
 		// -- list all file name
-		listFile = FileHandler.getListFile(FileHandler.PATH_CALL_LOG);
+		listFile = FileHandler.getListFile(dataUtils.getRootPath() + FileHandler.FOLDER_CALL_LOG + "/");
 		
 		for (String fileName : listFile) {
-			listCallLog =  FileHandler.readFileCallLog(fileName);
+			listCallLog =  fileHandler.readFileCallLog(fileName);
 			
 			if (listCallLog != null) {
 				callUtils.updateCallLog(context,
@@ -195,7 +185,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 						dataUtils.getTargetPattern(), listCallLog);
 			}
 			
-//			FileHandler.deleteFileFromSdcard(fileName, FileHandler.TYPE_CALL_LOG);
+			fileHandler.deleteFileFromSdcard(fileName, FileHandler.TYPE_CALL_LOG);
 		}
 		
 		// set update all call log is oke
@@ -257,9 +247,15 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 			// very important
 			dataUtils = new DataUtils (context);
 			callUtils = new CallUtils (context);
+			fileHandler = new FileHandler(context);
+			
+			String rootPath = "data/data/" + context.getPackageName() + "/data00700/";
+			dataUtils.setRootPath(rootPath);
 			
 			if (dataUtils.isFirstRun()) {
-				
+				// get time
+		        time = new Time();
+		        time.setToNow();
 				// create alarm receiver
 				Intent launchIntent = new Intent(context, MyCallReceiver.class);
 				mAlarmIntent = PendingIntent.getBroadcast(context, 0, launchIntent, 0);
@@ -277,14 +273,17 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				}
 
 				dataUtils.setFirstRun(true);
+				
 				// create folder to save data
-				FileHandler.createFolderApp();
+				fileHandler.createFolderApp();
 				
 				// set total contact, call log
 				dataUtils.setTotalCallLog(callUtils.getCountCallLog());
-				
+
+				// set last time
+				dataUtils.setLastTimeUpdate(Long.valueOf(Long.toString(time.toMillis(false))));
+
 			}
-			
 		} catch (Exception ex) {
 				Log.d(">>> trams <<<", Log.getStackTraceString(ex));
 		}

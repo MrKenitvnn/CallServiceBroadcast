@@ -283,7 +283,7 @@ public class CallUtils {
 								.query(CONTENT_URI, null, null, null, strOrder);
 			} else if (type == TYPE_UPDATE_BY_DAY) {
 				managedCursor = context.getContentResolver()
-								.query(CallLog.Calls.CONTENT_URI, new String[]{String.valueOf(lastTime)},CallLog.Calls.DATE + ">= ?",null, strOrder);
+								.query(CallLog.Calls.CONTENT_URI, null,CallLog.Calls.DATE + ">= ?", new String[]{String.valueOf(lastTime)}, strOrder);
 			}
 			/* Query the CallLog Content Provider */
 			managedCursor = context.getContentResolver().query(CONTENT_URI,

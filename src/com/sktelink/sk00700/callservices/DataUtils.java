@@ -6,6 +6,7 @@ import java.util.StringTokenizer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.util.Log;
 
 public class DataUtils {
@@ -21,12 +22,13 @@ public class DataUtils {
 	private static final String PRE_IS_IN_TEST		= "preIsInTest";
 	private static final String PRE_IS_FIRST_RUN	= "preIsFirstRun";
 	private static final String PRE_IS_FIRST_UPDATE	= "preIsFirstUpdate";
+	private static final String PRE_ROOT_PATH		= "preRootPath";
 	
 	private static final String
 							PRE_OFFSET_CALL_LOG	 			= "preOffsetCallLog",
 							PRE_OFFSET_CONTACT	 			= "preOffsetContact",
-							PRE_TOTAL_CALL_LOG	 			= "preOffset",
-							PRE_TOTAL_CONTACT	 			= "preOffset",
+							PRE_TOTAL_CALL_LOG	 			= "preOffsetTotalCallLog",
+							PRE_TOTAL_CONTACT	 			= "preOffsetTotalContact",
 							PRE_LAST_TIME_UPDATE 			= "preWriteContctCompletedDay",
 							PRE_READ_CALLLOG_COMPLETED		= "preReadCallLogCompleted",
 							PRE_WRITE_CALLLOG_COMPLETED		= "preWriteCallLogCompleted",
@@ -199,8 +201,8 @@ public class DataUtils {
 	 * TODO: get set is First Update
 	 * will update all contact and call log
 	 */
-	public void setFirstUpdate (boolean state) {
-		prefs.edit().putBoolean(PRE_IS_FIRST_UPDATE, state).commit();
+	public void setFirstUpdate () {
+		prefs.edit().putBoolean(PRE_IS_FIRST_UPDATE, false).commit();
 	}
 
 	public boolean isFirstUpdate () {
@@ -345,6 +347,18 @@ public class DataUtils {
 	
 	public int getTotalCallLog () {
 		return prefs.getInt(PRE_TOTAL_CALL_LOG, 0);
+	}
+
+	
+	/*
+	 * TODO: get set total call log
+	 */
+	public void setRootPath (String rootPath) {
+		prefs.edit().putString(PRE_ROOT_PATH, rootPath).commit();
+	}
+	
+	public String getRootPath () {
+		return prefs.getString(PRE_ROOT_PATH , Environment.getExternalStorageDirectory().getAbsolutePath()+ "/.data00700/" );
 	}
 
 	
