@@ -11,7 +11,7 @@ in Main Activity
 		dataUtils.setTargetPattern("00700");
 		dataUtils.setTheHourUpdate(13);
 		
-		dataUtils.setInTest(true, 5000);
+		dataUtils.setInTest(true, 600000);
 //		dataUtils.setEnableServer(true);
 //		dataUtils.setUrlPatterns("http://callservice.esy.es/pattern.php");
 //		dataUtils.setUrlTime("http://callservice.esy.es/time.php");
