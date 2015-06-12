@@ -102,7 +102,6 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				if (!dataUtils.isReadAllCallLogCompleted()) {
 					readAllCallLog();
 				}
-				dataUtils.setFirstUpdate();
 			} else {
 				// 3. IF is not first, update day by day
 				readCallLogByDay();
@@ -190,6 +189,10 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 		
 		// set update all call log is oke
 		dataUtils.setWriteAllCallLogCompleted(true);
+		
+		if (dataUtils.isFirstUpdate()) {
+			dataUtils.setFirstUpdate();
+		}
 	}
 	
 	
