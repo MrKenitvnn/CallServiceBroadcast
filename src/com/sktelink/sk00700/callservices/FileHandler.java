@@ -1,9 +1,13 @@
 package com.sktelink.sk00700.callservices;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.os.Environment;
 import android.util.Log;
@@ -89,7 +93,6 @@ public class FileHandler {
 		
 		try {
 			File myFile = new File(filePath);
-			
 			myFile.createNewFile();
 			
 			fOut		= new FileOutputStream(myFile, false);
@@ -115,13 +118,74 @@ public class FileHandler {
 	public static boolean deleteFileFromSdcard(String fileName, int type){
 		String filePath = null;
 		if (type == TYPE_CALL_LOG) {
-			filePath = PATH_CALL_LOG + fileName; 
+			filePath = PATH_CALL_LOG + fileName + "/"; 
 		} else if (type == TYPE_CONTACT) {
-			filePath = PATH_CONTACT + fileName;
+			filePath = PATH_CONTACT + fileName + "/";
 		}
 		File file = new File(filePath);
 		boolean deleted = file.delete();
 		return deleted;
 	}// end-func
+	
+	
+	/*
+	 * TODO: read data
+	 */
+	public static List<ItemCallLog> readFileCallLog(String fileName){
+		List<ItemCallLog> listData = new ArrayList<ItemCallLog>();
+		ItemCallLog item = null;
+		
+		FileReader file = null;
+		BufferedReader br = null;
+		try {
+			String sCurrentLine;
+			file = new FileReader(PATH_CALL_LOG + fileName);
+			br = new BufferedReader(file);
+			
+			if (br.readLine() == null) {
+				return null;
+			}
+			
+			while ((sCurrentLine = br.readLine()) != null) {
+				
+				item = new ItemCallLog();
+				String[] stk = sCurrentLine.split("=");
+				
+				item.setCallNumber(stk[0]);
+				item.setNewNumber(stk[1]);	
+				listData.add(item);
+			} 
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (br != null){
+					br.close();
+				}
+				if (file != null){
+					file.close();
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return listData;		
+	}
+	
+	/*
+	 * TODO: list all file in folder
+	 */
+	public static List<String> getListFile (String folderPath) {
+		List<String> listFile = new ArrayList<String>();
+		
+		File directory = new File (folderPath);
+		File[] fList = directory.listFiles();
+		
+		for (File file : fList) {
+			listFile.add(file.getName());
+		}
+		return listFile;		
+	}
+	
 	
 }

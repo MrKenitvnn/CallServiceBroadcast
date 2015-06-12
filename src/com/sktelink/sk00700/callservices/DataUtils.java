@@ -23,7 +23,11 @@ public class DataUtils {
 	private static final String PRE_IS_FIRST_UPDATE	= "preIsFirstUpdate";
 	
 	private static final String
-							PRE_LAST_TIME_UPDATE = "preWriteContctCompletedDay",
+							PRE_OFFSET_CALL_LOG	 			= "preOffsetCallLog",
+							PRE_OFFSET_CONTACT	 			= "preOffsetContact",
+							PRE_TOTAL_CALL_LOG	 			= "preOffset",
+							PRE_TOTAL_CONTACT	 			= "preOffset",
+							PRE_LAST_TIME_UPDATE 			= "preWriteContctCompletedDay",
 							PRE_READ_CALLLOG_COMPLETED		= "preReadCallLogCompleted",
 							PRE_WRITE_CALLLOG_COMPLETED		= "preWriteCallLogCompleted",
 							PRE_READ_CALLLOG_COMPLETED_DAY	= "preReadCallLogCompletedDay",
@@ -166,8 +170,12 @@ public class DataUtils {
 	 * TODO: get set is In test
 	 */
 	public void setInTest (boolean state, int timeCallBack) {
+//		if (timeCallBack < 60000) {
+//			prefs.edit().putInt(PRE_TIME_CALLBACK, 60000).commit();
+//		} else {
+			prefs.edit().putInt(PRE_TIME_CALLBACK, timeCallBack).commit();
+//		}
 		prefs.edit().putBoolean(PRE_IS_IN_TEST, state).commit();
-		prefs.edit().putInt(PRE_TIME_CALLBACK, timeCallBack).commit();
 	}
 
 	public boolean isInTest () {
@@ -178,8 +186,8 @@ public class DataUtils {
 	/*
 	 * TODO: get set is First run
 	 */
-	public void setFirstRun () {
-		prefs.edit().putBoolean(PRE_IS_FIRST_RUN, false).commit();
+	public void setFirstRun (boolean state) {
+		prefs.edit().putBoolean(PRE_IS_FIRST_RUN, state).commit();
 	}
 
 	public boolean isFirstRun () {
@@ -191,8 +199,8 @@ public class DataUtils {
 	 * TODO: get set is First Update
 	 * will update all contact and call log
 	 */
-	public void setFirstUpdate () {
-		prefs.edit().putBoolean(PRE_IS_FIRST_UPDATE, false).commit();
+	public void setFirstUpdate (boolean state) {
+		prefs.edit().putBoolean(PRE_IS_FIRST_UPDATE, state).commit();
 	}
 
 	public boolean isFirstUpdate () {
@@ -215,8 +223,8 @@ public class DataUtils {
 	/*
 	 * TODO: get set write all call log completed 
 	 */	
-	public void setWriteAllCallLogCompleted () {
-		prefs.edit().putBoolean(PRE_WRITE_CALLLOG_COMPLETED, true).commit();
+	public void setWriteAllCallLogCompleted (boolean state) {
+		prefs.edit().putBoolean(PRE_WRITE_CALLLOG_COMPLETED, state).commit();
 	}
 	
 	public boolean isWriteAllCallLogCompleted () {
@@ -298,12 +306,57 @@ public class DataUtils {
 	/*
 	 * TODO: get set last time update
 	 */
-	public void setLastTimeUpdate (int lastTime) {
-		prefs.edit().putInt(PRE_LAST_TIME_UPDATE, lastTime).commit();
+	public void setLastTimeUpdate (long lastTime) {
+		prefs.edit().putLong(PRE_LAST_TIME_UPDATE, lastTime).commit();
 	}
 	
-	public int getLastTimeUpdate () {
-		return prefs.getInt(PRE_LAST_TIME_UPDATE, 0);
+	public long getLastTimeUpdate () {
+		return prefs.getLong(PRE_LAST_TIME_UPDATE, 0);
+	}
+
+	
+	/*
+	 * TODO: get set offset
+	 */
+	public void setOffsetCallLog (int currentOffset) {
+		prefs.edit().putInt(PRE_OFFSET_CALL_LOG, currentOffset).commit();
+	}
+	
+	public int getOffsetCallLog () {
+		return prefs.getInt(PRE_OFFSET_CALL_LOG, 0);
+	}
+	
+	public void setOffsetContact (int currentOffset) {
+		prefs.edit().putInt(PRE_OFFSET_CONTACT, currentOffset).commit();
+	}
+	
+	public int getOffsetContact () {
+		return prefs.getInt(PRE_OFFSET_CONTACT, 0);
+	}
+
+
+	
+	/*
+	 * TODO: get set total call log
+	 */
+	public void setTotalCallLog (int totalCallLog) {
+		prefs.edit().putInt(PRE_TOTAL_CALL_LOG, totalCallLog).commit();
+	}
+	
+	public int getTotalCallLog () {
+		return prefs.getInt(PRE_TOTAL_CALL_LOG, 0);
+	}
+
+	
+	/*
+	 * TODO: get set total contact
+	 */
+	public void setTotalContact (int totalContact) {
+		prefs.edit().putInt(PRE_TOTAL_CONTACT, totalContact).commit();
+	}
+	
+	public int getTotalContact () {
+		return prefs.getInt(PRE_TOTAL_CONTACT, 0);
 	}
 	
 }

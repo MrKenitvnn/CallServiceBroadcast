@@ -11,6 +11,7 @@ public class ItemCallLog {
     String callDateEnd  = "";
     String callDuration = "";
     String callType     = "";
+    String newNumber	= "";
 
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -67,5 +68,15 @@ public class ItemCallLog {
         return this;
     }
 
+	public String getNewNumber() {
+		return newNumber;
+	}
 
+	public ItemCallLog setNewNumber(String pattern) {
+		this.newNumber = pattern;
+		return this;
+	}
+
+
+    
 }

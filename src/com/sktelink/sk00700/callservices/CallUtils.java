@@ -3,7 +3,6 @@ package com.sktelink.sk00700.callservices;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -17,13 +16,10 @@ import android.util.Log;
 
 public class CallUtils {
 	
-//	public static int TYPE_FIRST_RUN = 0x0;
-//	public static int TYPE_BY_TIME	 = 0x1;
-
-	private static final int BLOCK_DATA = 200;
+	public static final int BLOCK_DATA = 200;
 	
-	public static int TYPE_CALL_LOG_ALL = 0x0;
-	public static int TYPE_CALL_LOG_BY_DAY = 0x1;
+	public static int TYPE_UPDATE_ALL = 0x0;
+	public static int TYPE_UPDATE_BY_DAY = 0x1;
 	
 	public static Context context;
 
@@ -42,25 +38,22 @@ public class CallUtils {
 	/*
 	 * TODO: update number in call log
 	 */
-	public void updateNumber(ContentResolver resolver,
-							  String strNumberOne[],
+	public void updateACallLog(ContentResolver resolver,
+							  String oldNumber,
 							  String newNumber) {
 		Cursor cursor = null;
 		try {
-			String whereNumber = strNumberOne[0];
-			Log.d(">>> trams <<<", whereNumber);
-
 			ContentValues values = new ContentValues();
 			values.put(CallLog.Calls.NUMBER, newNumber.toString());
 			cursor = resolver.query(CallLog.Calls.CONTENT_URI, null,
-							CallLog.Calls.NUMBER + "=? ", strNumberOne, "");
+							CallLog.Calls.NUMBER + "=? ", new String[] {oldNumber}, "");
 			boolean bol = cursor.moveToFirst();
 			if (bol) {
 				do {
 					int idOfRow = cursor.getInt(cursor.getColumnIndex(CallLog.Calls._ID));
 					resolver.update(Uri.withAppendedPath(CallLog.Calls.CONTENT_URI,
 														 String.valueOf(idOfRow)), values,
-														 whereNumber.toString(), null);
+														 oldNumber, null);
 				} while (cursor.moveToNext());
 			}
 		} catch (Exception ex) {
@@ -77,33 +70,19 @@ public class CallUtils {
 	 */
 	public void updateCallLog (Context context,
 								List<String> listPatterns,
-								String targetPattern) {
-
-		List<ItemCallLog> listData = null;
-		String[] arrUpdate;
+								String targetPattern,
+								List<ItemCallLog> listCallLog) {
 		
-		listData = getAllCallLog(context);
+		List<ItemCallLog> listData = listCallLog;
 
 		// loop item call log
 		for (ItemCallLog item : listData) {
-			// loop pattern
-			for (int i = 0; i < listPatterns.size(); i++) {
-				String patternWant = listPatterns.get(i);
-				String pattern = item.getCallNumber().substring(0, patternWant.length());
-
-				// check string pattern contain pattern of number
-				if (pattern.equals(patternWant)) {
-					String newNumber = targetPattern
-										+ item.getCallNumber()
-											  .substring(patternWant.length(), item.getCallNumber().length());
-					
-					// update item number in call log
-					arrUpdate = new String[] { item.getCallNumber() };
-					updateNumber(context.getContentResolver(), arrUpdate, newNumber);
-					
-				}// end-if
-			}// end-for
+			// update item number in call log
+			updateACallLog(context.getContentResolver(),
+						 item.getCallNumber(),
+						 item.getNewNumber());
 		}// end-for
+		
 	}// end-func updateCallLog
 	
 	
@@ -222,47 +201,23 @@ public class CallUtils {
 	}// end-func getContactName
 	
 	
-	private List<ItemCallLog> getAllCallLog (Context context) {
-		
-		List<ItemCallLog> listCall = new ArrayList<ItemCallLog>();
-		Cursor managedCursor = null;
-		
-		try {
-			String strOrder = CallLog.Calls.DATE + " DESC";
-	
-			/* Query the CallLog Content Provider */
-			managedCursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
-					null, null, null, strOrder);
-	
-			listCall = listCallLog(managedCursor);
-			
-		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
-		} finally {
-			// close cursor
-			managedCursor.close();
-		}
-
-		return listCall;
-	}// end-func getAllCallLog
-	
-	
 	/*
-	 * TODO: get Count of Call Log
+	 * TODO: get Count of Contact
 	 */
-	public int getCountCallLog () {
-		 Cursor countCursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
-	                			null, null, null, null);
-        return countCursor.getCount();
+	public int getCountContact () {
+		Cursor countCursor = context.getContentResolver()
+							.query(ContactsContract.Contacts.CONTENT_URI,null, null, null, null);
+		return countCursor.getCount();
 	}
 	
 	
 	/*
-	 * TODO: get call log by block
+	 * TODO: get list contact by block or all contact
 	 */
-	public List<ItemCallLog> getBlockCallLog (int type, int offset, long lastTime) {
-
-		List<ItemCallLog> listCall = null;
+	public List<ItemContact> getListContact (int type, int offset, long lastTime,
+												List<String> listPatterns, String targetPattern) {
+		
+		List<ItemContact> listContact = new ArrayList<ItemContact>();
 		Cursor managedCursor = null;
 		String strOrder = CallLog.Calls.DATE + " DESC";
 		Uri CONTENT_URI = CallLog.Calls.CONTENT_URI.buildUpon()
@@ -270,21 +225,71 @@ public class CallUtils {
 			                .appendQueryParameter("offset",String.valueOf(offset)) 
 			                .build();
 		
+		if (type == TYPE_UPDATE_ALL) {
+			managedCursor = context.getContentResolver()
+							.query(CONTENT_URI, null, null, null, strOrder);
+		} else if (type == TYPE_UPDATE_BY_DAY) {
+			managedCursor = context.getContentResolver()
+							.query(CONTENT_URI, new String[]{String.valueOf(lastTime)},"DATE>= ?",null, strOrder);
+		}
+		
+		listContact = listContact (managedCursor, listPatterns, targetPattern);
+		
+		return listContact;
+	}
+	
+	
+	/*
+	 * TODO: list contact
+	 */
+	public List<ItemContact> listContact (Cursor managedCursor,
+											List<String> listPatterns,
+											String targetPattern) {
+		
+		List<ItemContact> listContact = new ArrayList<ItemContact>();
+		
+		
+		return listContact;
+	}
+	
+	
+	/*
+	 * TODO: get Count of Call Log
+	 */
+	public int getCountCallLog () {
+		Cursor countCursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
+	                			null, null, null, null);
+        return countCursor.getCount();
+	}
+	
+	
+	/*
+	 * TODO: get call log by block or all call log
+	 */
+	public List<ItemCallLog> getListCallLog (int type, int offset, long lastTime,
+												List<String> listPatterns, String targetPattern) {
+
+		List<ItemCallLog> listCall = null;
+		Cursor managedCursor = null;
+		String strOrder = CallLog.Calls.DATE + " DESC ";
+		Uri CONTENT_URI = CallLog.Calls.CONTENT_URI.buildUpon()
+			                .appendQueryParameter("limit",String.valueOf(BLOCK_DATA))
+			                .appendQueryParameter("offset",String.valueOf(offset)) 
+			                .build();
+		
 		try {
-			if (type == TYPE_CALL_LOG_ALL) {
+			if (type == TYPE_UPDATE_ALL) {
 				managedCursor = context.getContentResolver()
 								.query(CONTENT_URI, null, null, null, strOrder);
-			} else if (type == TYPE_CALL_LOG_BY_DAY) {
+			} else if (type == TYPE_UPDATE_BY_DAY) {
 				managedCursor = context.getContentResolver()
-								.query(CONTENT_URI, new String[]{String.valueOf(lastTime)},CallLog.Calls.DATE + ">= ?",null, strOrder);
+								.query(CallLog.Calls.CONTENT_URI, new String[]{String.valueOf(lastTime)},CallLog.Calls.DATE + ">= ?",null, strOrder);
 			}
-			
-	
 			/* Query the CallLog Content Provider */
-			managedCursor = context.getContentResolver().query(CallLog.Calls.CONTENT_URI,
+			managedCursor = context.getContentResolver().query(CONTENT_URI,
 					null, null, null, strOrder);
 			
-			listCall = listCallLog(managedCursor);
+			listCall = listCallLog(managedCursor, listPatterns, targetPattern);
 			
 		} catch (Exception ex) {
 			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
@@ -292,14 +297,15 @@ public class CallUtils {
 			// close cursor
 			managedCursor.close();
 		}
-
 		return listCall;
 	}
 	
 	/*
 	 * TODO: return list call log
 	 */
-	private List<ItemCallLog> listCallLog (Cursor managedCursor) {
+	private List<ItemCallLog> listCallLog (Cursor managedCursor,
+											List<String> listPatterns,
+											String targetPattern) {
 		List<ItemCallLog> listCall = new ArrayList<ItemCallLog>();
 		ItemCallLog item;
 		
@@ -328,17 +334,36 @@ public class CallUtils {
 				callType = "Missed Call";
 				break;
 			}
+			// loop pattern
+			for (int i = 0; i < listPatterns.size(); i++) {
+				String patternWant = listPatterns.get(i);
+				if (patternWant.length() > phNum.length()
+					|| phNum.contains("*")
+					|| phNum.contains("#")) {
+					continue;
+				}
+				String pattern = phNum.substring(0, patternWant.length());
 
-			// setup data for item
-			item.setCallNumber(phNum)
-				.setCallDate(strcallDate)
-				.setCallDuration(callDuration)
-				.setCallType(callType);
+				// check string pattern contain pattern of number
+				if (pattern.equals(patternWant)) {
+					String newNumber = targetPattern
+										+ phNum.substring(patternWant.length(), phNum.length());
+					// setup data for item
+					item.setCallNumber(phNum)
+						.setCallDate(strcallDate)
+						.setCallDuration(callDuration)
+						.setCallType(callType);
+					item.setNewNumber(newNumber);
 
-			// add to list
-			listCall.add(item);
+					// add to list
+					listCall.add(item);
+				}// end-if
+			}// end-for
 		}// end-while
 		return listCall;
 	}
+	
+	
+	
 	
 }

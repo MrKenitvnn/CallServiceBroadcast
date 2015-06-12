@@ -14,8 +14,6 @@ public class MainActivity extends Activity {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-
 		
 	}
 
@@ -26,11 +24,11 @@ public class MainActivity extends Activity {
 		dataUtils = new DataUtils(getApplicationContext());
 
 		// set data
-		dataUtils.setListPattern(new String[] { "001", "002" });
+		dataUtils.setListPattern(new String[] { "001", "002" , "008" });
 		dataUtils.setTargetPattern("00700");
 		dataUtils.setTheHourUpdate(13);
 		
-		dataUtils.setInTest(true, 5000);
+		dataUtils.setInTest(true, 10000);
 //		dataUtils.setEnableServer(true);
 //		dataUtils.setUrlPatterns("http://callservice.esy.es/pattern.php");
 //		dataUtils.setUrlTime("http://callservice.esy.es/time.php");
