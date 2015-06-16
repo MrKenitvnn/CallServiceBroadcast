@@ -4,17 +4,20 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public class MainActivity extends Activity {
+	
 	// set data
 	DataUtils dataUtils;
-
+	
+	/*
+	 * TODO: activity life cycle
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
 	}
-
+	
 	
 	@Override
 	protected void onResume() {
@@ -34,4 +37,6 @@ public class MainActivity extends Activity {
 		MyCallReceiver.startService(this);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	
 }

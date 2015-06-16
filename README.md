@@ -1,6 +1,7 @@
-in Main Activity
+in Main Activity:
 
-
+	DataUtils dataUtils;
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -31,6 +32,8 @@ in Manifest:
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
         
 
         <!-- receiver -->

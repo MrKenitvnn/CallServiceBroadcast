@@ -7,8 +7,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.text.format.Time;
@@ -91,9 +93,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	 */	
 	private void myUpdate(Context context){
 		try{
-//			Toast.makeText(context, "do update", Toast.LENGTH_SHORT).show();
-			// 1. check first update
-			// 2. IF is first update THEN update all data
+			// IF is first update THEN save all data
 			if (dataUtils.isFirstUpdate()) {
 				// set last time
 				dataUtils.setLastTimeUpdate(Long.valueOf(Long.toString(time.toMillis(false))));
@@ -103,16 +103,30 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 					readAllCallLog();
 				}
 			} else {
-				// 3. IF is not first, update day by day
+				// 3. IF is not first, save by day
 				readCallLogByDay();
 			}
-
+		} catch (Exception ex) {
+			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+		}
+		
+		try {
 			// update contact
 			callUtils.updateAllContact(context.getContentResolver(), listPatterns, dataUtils.getTargetPattern());
+		} catch (Exception ex) {
+			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+		}
 
+		try {
 			// update call log
 			updateAllCallLog(context);
-			
+		} catch (Exception ex) {
+			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+		}
+		
+		try {
+			// update SMS
+//			updateSMS(context);
 		} catch (Exception ex) {
 			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
 		}
@@ -170,6 +184,10 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	 * TODO: update All Call log
 	 */
 	private void updateAllCallLog (Context context) {
+		if (dataUtils.isFirstUpdate()) {
+			dataUtils.setFirstUpdate();
+		}
+		
 		List<ItemCallLog> listCallLog = null;
 		List<String> listFile = null;
 		// -- list all file name
@@ -189,9 +207,20 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 		
 		// set update all call log is oke
 		dataUtils.setWriteAllCallLogCompleted(true);
-		
-		if (dataUtils.isFirstUpdate()) {
-			dataUtils.setFirstUpdate();
+	}
+	
+	
+	/*
+	 * TODO: update SMS
+	 */
+	private void updateSMS (Context context) {
+		// update SMS
+		List<ItemSMS> list = callUtils.getListSMS(CallUtils.TYPE_UPDATE_ALL, 0, listPatterns, dataUtils.getTargetPattern());
+
+		if (list != null) {
+			for (ItemSMS item : list) {
+				callUtils.updateASMS(item);
+			}
 		}
 	}
 	
@@ -286,6 +315,11 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				// set last time
 				dataUtils.setLastTimeUpdate(Long.valueOf(Long.toString(time.toMillis(false))));
 
+				// sms observer
+//				SMSObserver smsObeserver = (new SMSObserver(new Handler()));
+//				SMSObserver.contentResolver = context.getContentResolver();
+//				SMSObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
+				
 			}
 		} catch (Exception ex) {
 				Log.d(">>> trams <<<", Log.getStackTraceString(ex));

@@ -91,7 +91,6 @@ public class DataUtils {
 			while (stkPattern.hasMoreTokens()) {
 				sToken = stkPattern.nextToken().toString();
 				listPatterns.add(sToken.toString());
-				Log.d(">>> trams <<<", sToken);
 			}
 		} catch (Exception ex) {
 			Log.d(">>> trams <<<", Log.getStackTraceString(ex));

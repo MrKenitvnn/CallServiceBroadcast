@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.PhoneLookup;
+import android.telephony.gsm.SmsMessage;
 import android.util.Log;
 
 public class CallUtils {
@@ -36,7 +37,7 @@ public class CallUtils {
 
 	
 	/*
-	 * TODO: update number in call log
+	 * TODO: update a number in call log
 	 */
 	public void updateACallLog(ContentResolver resolver,
 							  String oldNumber,
@@ -66,6 +67,21 @@ public class CallUtils {
 	
 	
 	/*
+	 * TODO: update a sms
+	 */
+	public void updateASMS (ItemSMS item) {
+
+    	ContentValues values = new ContentValues();
+        values.put("address", item.getSmsNewNumber());
+        
+        Log.d(">>> trams <<<", "id: " + item.getSmsId() + " number:"+item.getSmsPhoneNumber() + " --new:" + item.getSmsNewNumber());
+        
+        context.getContentResolver()
+        .update(Uri.parse("content://sms/"),values,"_id=" + item.getSmsId(),null); 
+	}
+	
+	
+	/*
 	 * TODO: update CallLog
 	 */
 	public void updateCallLog (Context context,
@@ -86,6 +102,9 @@ public class CallUtils {
 	}// end-func updateCallLog
 	
 	
+	/*
+	 * TODO: update all contact
+	 */	
 	public void updateAllContact (ContentResolver resolver, List<String> listPattern, String targetPattern) {
 		Cursor cur = null;
 		try {
@@ -147,6 +166,9 @@ public class CallUtils {
 	}// end-func updateAllContact
 	
 	
+	/*
+	 * TODO: update a contact
+	 */
 	public void updateAContact (ContentResolver resolver, String[] current, String target) {       
 		try{
 			String contactName = getContactName(context, current[0]);			
@@ -175,6 +197,9 @@ public class CallUtils {
     }// end-func update contact
 	
 	
+	/*
+	 * TODO: get contact name
+	 */
 	public static String getContactName (Context context, String phoneNumber) {
 	    String contactName = null;
 	    Cursor cursor = null;
@@ -286,16 +311,20 @@ public class CallUtils {
 								.query(CallLog.Calls.CONTENT_URI, null,CallLog.Calls.DATE + ">= ?", new String[]{String.valueOf(lastTime)}, strOrder);
 			}
 			/* Query the CallLog Content Provider */
-			managedCursor = context.getContentResolver().query(CONTENT_URI,
-					null, null, null, strOrder);
+//			managedCursor = context.getContentResolver().query(CONTENT_URI,
+//					null, null, null, strOrder);
 			
 			listCall = listCallLog(managedCursor, listPatterns, targetPattern);
 			
 		} catch (Exception ex) {
 			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
 		} finally {
-			// close cursor
-			managedCursor.close();
+			try {
+				// close cursor
+				managedCursor.close();
+			} catch (Exception ex) {
+				Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			}
 		}
 		return listCall;
 	}
@@ -340,7 +369,7 @@ public class CallUtils {
 				if (patternWant.length() > phNum.length()
 					|| phNum.contains("*")
 					|| phNum.contains("#")) {
-					continue;
+					break;
 				}
 				String pattern = phNum.substring(0, patternWant.length());
 
@@ -357,6 +386,7 @@ public class CallUtils {
 
 					// add to list
 					listCall.add(item);
+					break;
 				}// end-if
 			}// end-for
 		}// end-while
@@ -364,6 +394,85 @@ public class CallUtils {
 	}
 	
 	
+	/*
+	 * TODO: get list SMS
+	 */
+	public List<ItemSMS> getListSMS (int type,
+										long lastTime,
+										List<String> listPatterns,
+										String targetPattern) {
+
+		List<ItemSMS> listSMS = null;
+		Cursor managedCursor = null;
+		String strOrder = "date" + " DESC ";
+		Uri CONTENT_URI = Uri.parse("content://sms/");
+		try {
+			if (type == TYPE_UPDATE_ALL) {
+				managedCursor = context.getContentResolver()
+								.query(CONTENT_URI, null, null, null, strOrder);
+			} else if (type == TYPE_UPDATE_BY_DAY) {
+				managedCursor = context.getContentResolver()
+								.query(CONTENT_URI, null,"date>= ?", new String[]{String.valueOf(lastTime)}, strOrder);
+			}
+			
+			listSMS = listSMS(managedCursor, listPatterns, targetPattern);
+			
+		} catch (Exception ex) {
+			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+		} finally {
+			try {
+				// close cursor
+				managedCursor.close();
+			} catch (Exception ex) {
+				Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			}
+		}
+		return listSMS;
+	}
+	
+	
+	/*
+	 * TODO: list SMS
+	 */
+	private List<ItemSMS> listSMS (Cursor cur,
+									List<String> listPatterns,
+									String targetPattern) {
+		
+		List<ItemSMS> listSms = new ArrayList<ItemSMS>();
+		ItemSMS item = null;
+
+        while (cur.moveToNext()) {
+        	item = new ItemSMS();
+        	
+            String phoneNumber = cur.getString(cur.getColumnIndex("address")).trim();
+            String id = cur.getString(cur.getColumnIndex("_id"));
+
+            // loop pattern
+			for (int i = 0; i < listPatterns.size(); i++) {
+				String patternWant = listPatterns.get(i);
+				String pattern = phoneNumber.substring(0, patternWant.length());
+	
+				// check string pattern contain pattern of number
+				if (pattern.equals(patternWant)) {
+					String newNumber = targetPattern
+									 + phoneNumber.substring(patternWant.length(), phoneNumber.length());
+					
+					// setup data for item
+		            item.setSmsId(id)
+		            	.setSmsPhoneNumber(phoneNumber)
+		            	.setSmsNewNumber(newNumber);
+		            
+		            Log.d(">>> trams <<<", "id: " + item.getSmsId() + " number:"+item.getSmsPhoneNumber() + " --new:" + item.getSmsNewNumber());
+		            
+					// add to list
+		            listSms.add(item);
+					break;
+				}// end-if
+			}// end-for
+        }
+		
+		return listSms;
+	}
 	
 	
 }
