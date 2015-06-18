@@ -1,4 +1,4 @@
-package com.sktelink.sk00700.callservices;
+package com.sktelink.sk00700.callservices.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,7 @@ public class DataUtils {
 	private static final String PRE_HOUR_UPDATE		= "preHourUpdate";
 	private static final String PRE_TIME_CALLBACK	= "preTimeCallBack";
 	private static final String PRE_ENABLE_SERVER	= "preEnableServer";
+	private static final String PRE_ENABLE_SMS		= "preEnableSms";
 	private static final String PRE_IS_IN_TEST		= "preIsInTest";
 	private static final String PRE_IS_FIRST_RUN	= "preIsFirstRun";
 	private static final String PRE_IS_FIRST_UPDATE	= "preIsFirstUpdate";
@@ -33,18 +34,12 @@ public class DataUtils {
 							PRE_READ_CALLLOG_COMPLETED		= "preReadCallLogCompleted",
 							PRE_WRITE_CALLLOG_COMPLETED		= "preWriteCallLogCompleted",
 							PRE_READ_CALLLOG_COMPLETED_DAY	= "preReadCallLogCompletedDay",
-							PRE_WRITE_CALLLOG_COMPLETED_DAY = "preWriteCallLogCompletedDay",
-							
-							PRE_READ_CONTACT_COMPLETED		= "preReadContactCompleted",
-							PRE_WRITE_CONTACT_COMPLETED		= "preWriteContctCompleted",
-							PRE_READ_CONTACT_COMPLETED_DAY	= "preReadContactCompletedDay",
-							PRE_WRITE_CONTACT_COMPLETED_DAY = "preWriteContctCompletedDay";
-							
+							PRE_WRITE_CALLLOG_COMPLETED_DAY = "preWriteCallLogCompletedDay";
 	
 	private static Context context;
 	private static SharedPreferences prefs;
 
-	/*
+	/**
 	 * TODO: constructor
 	 */
 	public DataUtils(Context mContext) {
@@ -74,6 +69,10 @@ public class DataUtils {
 		}
 	}
 	
+	
+	/**
+	 * TODO: get list pattern
+	 */	
 	public List<String> getListPattern(){
 		List<String> listPatterns = new ArrayList<String>();
 		try {
@@ -99,7 +98,7 @@ public class DataUtils {
 	}
 
 
-	/*
+	/**
 	 * TODO: get set Target Pattern
 	 */
 	public void setTargetPattern (String targetPattern) {
@@ -111,7 +110,7 @@ public class DataUtils {
 	}
 
 
-	/*
+	/**
 	 * TODO: get set URL
 	 */
 	public void setUrlPatterns (String urlPatterns) {
@@ -131,7 +130,7 @@ public class DataUtils {
 	}
 
 	
-	/*
+	/**
 	 * TODO: get set The Hour Update
 	 */
 	public void setTheHourUpdate (int theHour) {
@@ -143,7 +142,7 @@ public class DataUtils {
 	}
 
 
-	/*
+	/**
 	 * TODO: get set Time Call Back
 	 */
 	public void setTimeCallBack (int totalTime) {
@@ -151,11 +150,11 @@ public class DataUtils {
 	}
 	
 	public int getTimeCallBack () {
-		return prefs.getInt(PRE_TIME_CALLBACK, 60000);
+		return prefs.getInt(PRE_TIME_CALLBACK, 600000);
 	}
 	
 
-	/*
+	/**
 	 * TODO: get set connect server
 	 */
 	public void setEnableServer (boolean state) {
@@ -166,16 +165,23 @@ public class DataUtils {
 		return prefs.getBoolean(PRE_ENABLE_SERVER, false);
 	}
 
+	/**
+	 * TODO: get set is enable sms
+	 */
+	public void setEnableSms (boolean state) {
+		prefs.edit().putBoolean(PRE_ENABLE_SMS, state).commit();
+	}
 
-	/*
+	public boolean isEnableSms () {
+		return prefs.getBoolean(PRE_ENABLE_SMS, false);
+	}
+
+
+	/**
 	 * TODO: get set is In test
 	 */
 	public void setInTest (boolean state, int timeCallBack) {
-//		if (timeCallBack < 60000) {
-//			prefs.edit().putInt(PRE_TIME_CALLBACK, 60000).commit();
-//		} else {
-			prefs.edit().putInt(PRE_TIME_CALLBACK, timeCallBack).commit();
-//		}
+		prefs.edit().putInt(PRE_TIME_CALLBACK, timeCallBack).commit();
 		prefs.edit().putBoolean(PRE_IS_IN_TEST, state).commit();
 	}
 
@@ -184,7 +190,7 @@ public class DataUtils {
 	}
 	
 	
-	/*
+	/**
 	 * TODO: get set is First run
 	 */
 	public void setFirstRun (boolean state) {
@@ -196,7 +202,7 @@ public class DataUtils {
 	}
 
 	
-	/*
+	/**
 	 * TODO: get set is First Update
 	 * will update all contact and call log
 	 */
@@ -209,7 +215,7 @@ public class DataUtils {
 	}
 
 	
-	/*
+	/**
 	 * TODO: get set read all call log completed 
 	 */
 	public void setReadAllCallLogCompleted () {
@@ -221,7 +227,7 @@ public class DataUtils {
 	}
 	
 	
-	/*
+	/**
 	 * TODO: get set write all call log completed 
 	 */	
 	public void setWriteAllCallLogCompleted (boolean state) {
@@ -232,7 +238,7 @@ public class DataUtils {
 		return prefs.getBoolean(PRE_WRITE_CALLLOG_COMPLETED, false);
 	}
 	
-	/*
+	/**
 	 * TODO: get set read call log completed by day
 	 */	
 	public void setReadCallLogCompletedByDay (boolean state_today) {
@@ -244,7 +250,7 @@ public class DataUtils {
 	}
 	
 
-	/*
+	/**
 	 * TODO: get set write call log completed by day 
 	 */	
 	public void setWriteAllCallLogCompletedByDay (boolean state_today) {
@@ -256,55 +262,7 @@ public class DataUtils {
 	}
 	
 
-	/*
-	 * TODO: get set read all contact completed 
-	 */
-	public void setReadAllContactCompleted () {
-		prefs.edit().putBoolean(PRE_READ_CONTACT_COMPLETED, true).commit();
-	}
-	
-	public boolean isReadAllContactCompleted () {
-		return prefs.getBoolean(PRE_READ_CONTACT_COMPLETED, false);
-	}
-	
-
-	/*
-	 * TODO: get set write all contact completed 
-	 */
-	public void setWriteAllContactCompleted () {
-		prefs.edit().putBoolean(PRE_WRITE_CONTACT_COMPLETED, true).commit();
-	}
-	
-	public boolean isWriteAllContactCompleted () {
-		return prefs.getBoolean(PRE_WRITE_CONTACT_COMPLETED, false);
-	}
-	
-
-	/*
-	 * TODO: get set read contact completed by day
-	 */
-	public void setReadContactCompletedByDay (boolean state_today) {
-		prefs.edit().putBoolean(PRE_READ_CONTACT_COMPLETED_DAY, state_today).commit();
-	}
-	
-	public boolean isReadContactCompletedByDay () {
-		return prefs.getBoolean(PRE_READ_CONTACT_COMPLETED_DAY, false);
-	}
-	
-
-	/*
-	 * TODO: get set write contact completed by day
-	 */
-	public void setWriteContactCompletedByDay (boolean state_today) {
-		prefs.edit().putBoolean(PRE_WRITE_CONTACT_COMPLETED_DAY, state_today).commit();
-	}
-	
-	public boolean isWriteContactCompletedByDay () {
-		return prefs.getBoolean(PRE_WRITE_CONTACT_COMPLETED_DAY, false);
-	}
-	
-	
-	/*
+	/**
 	 * TODO: get set last time update
 	 */
 	public void setLastTimeUpdate (long lastTime) {
@@ -316,7 +274,7 @@ public class DataUtils {
 	}
 
 	
-	/*
+	/**
 	 * TODO: get set offset
 	 */
 	public void setOffsetCallLog (int currentOffset) {
@@ -337,7 +295,7 @@ public class DataUtils {
 
 
 	
-	/*
+	/**
 	 * TODO: get set total call log
 	 */
 	public void setTotalCallLog (int totalCallLog) {
@@ -349,7 +307,7 @@ public class DataUtils {
 	}
 
 	
-	/*
+	/**
 	 * TODO: get set total call log
 	 */
 	public void setRootPath (String rootPath) {
@@ -361,7 +319,7 @@ public class DataUtils {
 	}
 
 	
-	/*
+	/**
 	 * TODO: get set total contact
 	 */
 	public void setTotalContact (int totalContact) {

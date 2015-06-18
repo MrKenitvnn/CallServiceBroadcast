@@ -1,4 +1,4 @@
-package com.sktelink.sk00700.callservices;
+package com.sktelink.sk00700.callservices.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -6,9 +6,10 @@ import android.net.NetworkInfo;
 
 public class MyUtils {
 
-	// //////////////////////////////////////////////////////////////////////////////
-	// TODO check network
 
+	/**
+	 * TODO: check network
+	 */
 	public static boolean isOnline(Context context) {
 
 		ConnectivityManager cm  = (ConnectivityManager) 

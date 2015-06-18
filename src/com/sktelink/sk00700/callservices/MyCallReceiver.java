@@ -1,5 +1,7 @@
 package com.sktelink.sk00700.callservices;
 
+import static com.sktelink.sk00700.callservices.utils.CommonUtilities.TAG;
+
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +17,14 @@ import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.text.format.Time;
 import android.util.Log;
+
+import com.sktelink.sk00700.callservices.handler.FileHandler;
+import com.sktelink.sk00700.callservices.handler.MyJsonHandler;
+import com.sktelink.sk00700.callservices.object.ItemCallLog;
+import com.sktelink.sk00700.callservices.object.ItemSMS;
+import com.sktelink.sk00700.callservices.utils.CallUtils;
+import com.sktelink.sk00700.callservices.utils.DataUtils;
+import com.sktelink.sk00700.callservices.utils.MyUtils;
 
 public class MyCallReceiver extends WakefulBroadcastReceiver {
 	
@@ -38,7 +48,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		try {
-			Log.d(">>> trams <<<", "1. onReceive --START");
+			Log.d(TAG, "1. onReceive --START");
 			// very important
 			dataUtils = new DataUtils(context);
 			callUtils = new CallUtils(context);
@@ -62,9 +72,9 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 					doTaskUpdate(context, dataUtils.isEnableServer());
 				}
 			}
-			Log.d(">>> trams <<<", "2. onReceive --OKE");
+			Log.d(TAG, "2. onReceive --OKE");
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		}
 	}
 	
@@ -84,7 +94,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				myUpdate(context);
 			}
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		}
 	}
 	
@@ -93,6 +103,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	 */	
 	private void myUpdate(Context context){
 		try{
+			
 			// IF is first update THEN save all data
 			if (dataUtils.isFirstUpdate()) {
 				// set last time
@@ -107,29 +118,23 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				readCallLogByDay();
 			}
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		}
 		
 		try {
 			// update contact
 			callUtils.updateAllContact(context.getContentResolver(), listPatterns, dataUtils.getTargetPattern());
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		}
 
 		try {
 			// update call log
 			updateAllCallLog(context);
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		}
 		
-		try {
-			// update SMS
-//			updateSMS(context);
-		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
-		}
 	}
 	
 	/*
@@ -244,14 +249,14 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				mArrPatterns = MyJsonHandler.getPattern(mUrlPatterns);
 				mHourUpdate = MyJsonHandler.getTime(mUrlTime).getHour();
 			} catch (Exception ex) {
-				Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+				Log.d(TAG, Log.getStackTraceString(ex));
 			}
 			return null;
 		}
 	
 		@Override
 		protected void onPostExecute(Void result) {
-			try{
+			try {
 				// set list patterns
 				dataUtils.setListPattern(mArrPatterns);
 				// set hour update
@@ -265,7 +270,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				// call update
 				myUpdate(context);
 			} catch (Exception ex) {
-				Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+				Log.d(TAG, Log.getStackTraceString(ex));
 			}
 		}
 	}// end-async AsyncDataFromServer
@@ -281,7 +286,8 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 			callUtils = new CallUtils (context);
 			fileHandler = new FileHandler(context);
 			
-			String rootPath = "data/data/" + context.getPackageName() + "/data00700/";
+			// create folder data
+			String rootPath = "data/data/" + context.getPackageName() + "/" + FileHandler.FOLDER_ROOT + "/";
 			dataUtils.setRootPath(rootPath);
 			
 			if (dataUtils.isFirstRun()) {
@@ -304,6 +310,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 							SystemClock.elapsedRealtime(), dataUtils.getTimeCallBack(), mAlarmIntent);
 				}
 
+				// set first run
 				dataUtils.setFirstRun(true);
 				
 				// create folder to save data
@@ -316,14 +323,43 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				dataUtils.setLastTimeUpdate(Long.valueOf(Long.toString(time.toMillis(false))));
 
 				// sms observer
-//				SMSObserver smsObeserver = (new SMSObserver(new Handler()));
-//				SMSObserver.contentResolver = context.getContentResolver();
-//				SMSObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
-				
+				if (dataUtils.isEnableSms()) {
+					SmsObserver smsObeserver = (new SmsObserver(new Handler()));
+					SmsObserver.context = context;
+					SmsObserver.contentResolver = context.getContentResolver();
+					SmsObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
+				}
 			}
 		} catch (Exception ex) {
-				Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+				Log.d(TAG, Log.getStackTraceString(ex));
 		}
 	}
+	
+	
+	/**
+	 * TODO: get string data SMS
+	 */
+	public static String getStringDataSMS (Context context) {
+		String data = "";
+		
+		if (dataUtils == null) {
+			dataUtils = new DataUtils(context);
+		}
+		if (fileHandler == null) {
+			fileHandler = new FileHandler(context);
+		}
+		
+		if (dataUtils.isEnableSms()) {
+			// read data sms
+			List<String> listFile = null;
+			// -- list all file name
+			listFile = FileHandler.getListFile(dataUtils.getRootPath() + FileHandler.FOLDER_SMS + "/");
+			for (String fileName : listFile) {
+				data += fileHandler.readFileSMS(fileName);
+				Log.d(TAG, "data sms: " + data);
+			}
+		}
+		return data;
+	} 
 	
 }

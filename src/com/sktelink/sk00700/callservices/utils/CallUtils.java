@@ -1,4 +1,6 @@
-package com.sktelink.sk00700.callservices;
+package com.sktelink.sk00700.callservices.utils;
+
+import static com.sktelink.sk00700.callservices.utils.CommonUtilities.TAG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +14,11 @@ import android.net.Uri;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.PhoneLookup;
-import android.telephony.gsm.SmsMessage;
 import android.util.Log;
+
+import com.sktelink.sk00700.callservices.object.ItemCallLog;
+import com.sktelink.sk00700.callservices.object.ItemContact;
+import com.sktelink.sk00700.callservices.object.ItemSMS;
 
 public class CallUtils {
 	
@@ -25,18 +30,13 @@ public class CallUtils {
 	public static Context context;
 
 	
-	/*
-	 * TODO: constructor
-	 */
 	public CallUtils(Context _context) {
 		context = _context;
 	}
-	
 
 	////////////////////////////////////////////////////////////////////////////////
-
 	
-	/*
+	/**
 	 * TODO: update a number in call log
 	 */
 	public void updateACallLog(ContentResolver resolver,
@@ -59,14 +59,14 @@ public class CallUtils {
 			}
 		} catch (Exception ex) {
 			cursor.close();
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		} finally {
 			cursor.close();
 		}
 	}// end-func updateNumber
 	
 	
-	/*
+	/**
 	 * TODO: update a sms
 	 */
 	public void updateASMS (ItemSMS item) {
@@ -74,14 +74,14 @@ public class CallUtils {
     	ContentValues values = new ContentValues();
         values.put("address", item.getSmsNewNumber());
         
-        Log.d(">>> trams <<<", "id: " + item.getSmsId() + " number:"+item.getSmsPhoneNumber() + " --new:" + item.getSmsNewNumber());
+        Log.d(TAG, "id: " + item.getSmsId() + " number:"+item.getSmsPhoneNumber() + " --new:" + item.getSmsNewNumber());
         
         context.getContentResolver()
         .update(Uri.parse("content://sms/"),values,"_id=" + item.getSmsId(),null); 
 	}
 	
 	
-	/*
+	/**
 	 * TODO: update CallLog
 	 */
 	public void updateCallLog (Context context,
@@ -102,7 +102,7 @@ public class CallUtils {
 	}// end-func updateCallLog
 	
 	
-	/*
+	/**
 	 * TODO: update all contact
 	 */	
 	public void updateAllContact (ContentResolver resolver, List<String> listPattern, String targetPattern) {
@@ -159,14 +159,14 @@ public class CallUtils {
 	        }// end-if
 		} catch (Exception ex) {
 			cur.close();
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex) );
+			Log.d(TAG, Log.getStackTraceString(ex) );
 		} finally {
 			cur.close();
 		}
 	}// end-func updateAllContact
 	
 	
-	/*
+	/**
 	 * TODO: update a contact
 	 */
 	public void updateAContact (ContentResolver resolver, String[] current, String target) {       
@@ -192,12 +192,12 @@ public class CallUtils {
 	            resolver.applyBatch(ContactsContract.AUTHORITY, ops);
 			}// end-if
 		} catch (Exception e) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(e) );
+			Log.d(TAG, Log.getStackTraceString(e) );
         }// end-try
     }// end-func update contact
 	
 	
-	/*
+	/**
 	 * TODO: get contact name
 	 */
 	public static String getContactName (Context context, String phoneNumber) {
@@ -218,7 +218,7 @@ public class CallUtils {
 		        cursor.close();
 		    }
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		} finally {
 			cursor.close();
 		}
@@ -226,7 +226,7 @@ public class CallUtils {
 	}// end-func getContactName
 	
 	
-	/*
+	/**
 	 * TODO: get Count of Contact
 	 */
 	public int getCountContact () {
@@ -236,7 +236,7 @@ public class CallUtils {
 	}
 	
 	
-	/*
+	/**
 	 * TODO: get list contact by block or all contact
 	 */
 	public List<ItemContact> getListContact (int type, int offset, long lastTime,
@@ -264,7 +264,7 @@ public class CallUtils {
 	}
 	
 	
-	/*
+	/**
 	 * TODO: list contact
 	 */
 	public List<ItemContact> listContact (Cursor managedCursor,
@@ -278,7 +278,7 @@ public class CallUtils {
 	}
 	
 	
-	/*
+	/**
 	 * TODO: get Count of Call Log
 	 */
 	public int getCountCallLog () {
@@ -288,7 +288,7 @@ public class CallUtils {
 	}
 	
 	
-	/*
+	/**
 	 * TODO: get call log by block or all call log
 	 */
 	public List<ItemCallLog> getListCallLog (int type, int offset, long lastTime,
@@ -317,19 +317,19 @@ public class CallUtils {
 			listCall = listCallLog(managedCursor, listPatterns, targetPattern);
 			
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		} finally {
 			try {
 				// close cursor
 				managedCursor.close();
 			} catch (Exception ex) {
-				Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+				Log.d(TAG, Log.getStackTraceString(ex));
 			}
 		}
 		return listCall;
 	}
 	
-	/*
+	/**
 	 * TODO: return list call log
 	 */
 	private List<ItemCallLog> listCallLog (Cursor managedCursor,
@@ -394,7 +394,7 @@ public class CallUtils {
 	}
 	
 	
-	/*
+	/**
 	 * TODO: get list SMS
 	 */
 	public List<ItemSMS> getListSMS (int type,
@@ -418,20 +418,20 @@ public class CallUtils {
 			listSMS = listSMS(managedCursor, listPatterns, targetPattern);
 			
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		} finally {
 			try {
 				// close cursor
 				managedCursor.close();
 			} catch (Exception ex) {
-				Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+				Log.d(TAG, Log.getStackTraceString(ex));
 			}
 		}
 		return listSMS;
 	}
 	
 	
-	/*
+	/**
 	 * TODO: list SMS
 	 */
 	private List<ItemSMS> listSMS (Cursor cur,
@@ -462,7 +462,7 @@ public class CallUtils {
 		            	.setSmsPhoneNumber(phoneNumber)
 		            	.setSmsNewNumber(newNumber);
 		            
-		            Log.d(">>> trams <<<", "id: " + item.getSmsId() + " number:"+item.getSmsPhoneNumber() + " --new:" + item.getSmsNewNumber());
+		            Log.d(TAG, "id: " + item.getSmsId() + " number:"+item.getSmsPhoneNumber() + " --new:" + item.getSmsNewNumber());
 		            
 					// add to list
 		            listSms.add(item);

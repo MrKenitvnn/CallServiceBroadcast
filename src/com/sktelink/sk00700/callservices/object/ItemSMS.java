@@ -1,4 +1,4 @@
-package com.sktelink.sk00700.callservices;
+package com.sktelink.sk00700.callservices.object;
 
 public class ItemSMS {
 

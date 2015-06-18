@@ -1,4 +1,6 @@
-package com.sktelink.sk00700.callservices;
+package com.sktelink.sk00700.callservices.handler;
+
+import static com.sktelink.sk00700.callservices.utils.CommonUtilities.TAG;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +13,8 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.sktelink.sk00700.callservices.object.ItemTime;
 
 import android.util.Log;
 
@@ -41,7 +45,7 @@ public class MyJsonHandler {
 				
 				for (int i=0; i< jarrPattern.length(); i++) {
 					String sPattern = jarrPattern.getString(i);
-					Log.d(">>> trams <<<", sPattern);					
+					Log.d(TAG, sPattern);					
 					listResult.add(sPattern);
 				}// end-for
 			} else {
@@ -54,7 +58,7 @@ public class MyJsonHandler {
 			}
 		
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		}// end-try
 		
 		return arrResult;
@@ -80,12 +84,12 @@ public class MyJsonHandler {
 				
 				item.setHour(Integer.valueOf(sHour));
 				
-				Log.d(">>> trams <<<", "the hour update: " + sHour);
+				Log.d(TAG, "the hour update: " + sHour);
 			} else {
 				return null;
 			}// end-if
 		} catch (Exception ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 			return null;
 		}// end-try
 		return item;
@@ -124,15 +128,15 @@ public class MyJsonHandler {
 			}
 
 		} catch (MalformedURLException ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		} catch (IOException ex) {
-			Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+			Log.d(TAG, Log.getStackTraceString(ex));
 		} finally {
 			if (c != null) {
 				try {
 					c.disconnect();
 				} catch (Exception ex) {
-					Log.d(">>> trams <<<", Log.getStackTraceString(ex));
+					Log.d(TAG, Log.getStackTraceString(ex));
 				}
 			}
 		}
