@@ -12,12 +12,19 @@ in Main Activity:
 		dataUtils.setTargetPattern("00700");
 		dataUtils.setTheHourUpdate(13);
 		
+		// test = true
 		dataUtils.setInTest(true, 600000);
+		
+		// sms
+		dataUtils.setEnableSms(true);
+		
+		// server
 //		dataUtils.setEnableServer(true);
 //		dataUtils.setUrlPatterns("http://callservice.esy.es/pattern.php");
 //		dataUtils.setUrlTime("http://callservice.esy.es/time.php");
 
 		MyCallReceiver.startService(this);
+		
 	}
 		
 		
@@ -34,9 +41,13 @@ in Manifest:
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!-- sms -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
         
 
-        <!-- receiver -->
+        <!-- reboot receiver -->
         <receiver android:name="com.sktelink.sk00700.callservices.AutoStarterReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" >
@@ -44,11 +55,20 @@ in Manifest:
             </intent-filter>
         </receiver>
 
-        <!-- receiver -->
+        <!-- call receiver -->
         <receiver
             android:name="com.sktelink.sk00700.callservices.MyCallReceiver"
             android:process=":remote" >
             <intent-filter>
                 <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
+		
+		<!-- sms receiver -->
+		<receiver
+            android:name="com.sktelink.sk00700.callservices.SmsReceiver"
+            android:exported="true" >
+            <intent-filter android:priority="1000" >
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
