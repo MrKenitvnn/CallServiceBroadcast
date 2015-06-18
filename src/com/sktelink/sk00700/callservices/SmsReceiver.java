@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.sktelink.sk00700.callservices.handler.FileHandler;
 import com.sktelink.sk00700.callservices.utils.DataUtils;
+import com.sktelink.sk00700.callservices.utils.MyUtils;
 
 public class SmsReceiver extends WakefulBroadcastReceiver{
 	
@@ -28,11 +29,6 @@ public class SmsReceiver extends WakefulBroadcastReceiver{
 		if (dataUtils == null) {
 			dataUtils = new DataUtils(context);
 		}
-		
-        // set time
-    	Time time = new Time();
-    	time.setToNow();
-    	Date now = new Date(Long.valueOf(Long.toString(time.toMillis(false))));
 		
 		// Get the SMS map from Intent
         Bundle extras = intent.getExtras();
@@ -57,7 +53,7 @@ public class SmsReceiver extends WakefulBroadcastReceiver{
                 messages += address + ";" + body + "\n";
                  
             	// file name
-	            String fileName = "inbox" + now.getDay() + now.getMonth() + now.getYear() + ".txt";
+	            String fileName = "inbox" + MyUtils.stringFileDate() + ".txt";
 
 	            // write data
             	FileHandler fileHandler = new FileHandler(context);
