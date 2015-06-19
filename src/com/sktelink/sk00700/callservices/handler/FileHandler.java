@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.sktelink.sk00700.callservices.object.ItemCallLog;
 import com.sktelink.sk00700.callservices.utils.DataUtils;
+import com.sktelink.sk00700.callservices.utils.MyUtils;
 
 import android.content.Context;
 import android.os.Environment;
@@ -41,8 +42,8 @@ public class FileHandler {
 	}
 	
 	
-	/*
-	 * TODO: 
+	/**
+	 * TODO: create app's folder
 	 */
 	public void createFolderApp () {
 		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -71,7 +72,7 @@ public class FileHandler {
 	}
 	
 	
-	/*
+	/**
 	 * TODO: delete Folder
 	 */	
 	public static boolean deleteBookFolder(File path) {
@@ -93,7 +94,7 @@ public class FileHandler {
 	}// end-func
 	
 	
-	/*
+	/**
 	 * TODO: write data
 	 */	
 	public void writeData (String strData, String fileName, int type) {
@@ -130,7 +131,7 @@ public class FileHandler {
 	}// end-func
 	
 	
-	/*
+	/**
 	 * TODO: delete file data
 	 */
 	public boolean deleteFileFromSdcard(String fileName, int type){
@@ -146,7 +147,7 @@ public class FileHandler {
 	}// end-func
 	
 	
-	/*
+	/**
 	 * TODO: read data
 	 */
 	public List<ItemCallLog> readFileCallLog(String fileName){
@@ -186,7 +187,7 @@ public class FileHandler {
 		return listData;		
 	}
 	
-	/*
+	/**
 	 * TODO: read data
 	 */
 	public String readFileSMS(String fileName){
@@ -219,7 +220,7 @@ public class FileHandler {
 		return data;		
 	}
 	
-	/*
+	/**
 	 * TODO: list all file in folder
 	 */
 	public static List<String> getListFile (String folderPath) {
@@ -232,7 +233,27 @@ public class FileHandler {
 			listFile.add(file.getName());
 		}
 		
-		return listFile;		
+		return listFile;
+	}
+	
+	/**
+	 * TODO: get list file not today
+	 */
+	public List<String> listFileSmsToUpload () {
+		List<String> listFile = new ArrayList<String>();
+		
+		File directory = new File (dataUtils.getRootPath() + FOLDER_SMS + "/");
+		File[] fList = directory.listFiles();
+		
+		String sToday = MyUtils.stringFileDate();
+		
+		for (File file : fList) {
+			if (!file.getName().contains(sToday)) {
+				listFile.add(file.getPath());
+			}
+		}
+		
+		return listFile;
 	}
 	
 }

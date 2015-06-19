@@ -22,7 +22,7 @@ public class MyUtils {
 
 	
 	/**
-	 * TODO: return string day + month + year
+	 * TODO: return string: day + month + year
 	 */
 	public static String stringFileDate () {
 		

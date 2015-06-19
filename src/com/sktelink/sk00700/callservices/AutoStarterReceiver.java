@@ -44,13 +44,13 @@ public class AutoStarterReceiver extends BroadcastReceiver {
 						SystemClock.elapsedRealtime(), dataUtils.getTimeCallBack(), mAlarmIntent);
 			}
 			
-			// sms observer
-			if (dataUtils.isEnableSms()) {
-				SmsObserver smsObeserver = (new SmsObserver(new Handler()));
-				SmsObserver.context = context;
-				SmsObserver.contentResolver = context.getContentResolver();
-				SmsObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
-			}
+//			// sms observer
+//			if (dataUtils.isEnableSms()) {
+//				SmsObserver smsObeserver = (new SmsObserver(new Handler()));
+//				SmsObserver.context = context;
+//				SmsObserver.contentResolver = context.getContentResolver();
+//				SmsObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
+//			}
 			
 			Log.d(TAG, "on Receive Boot Completed");
 		} catch (Exception ex) {

@@ -323,12 +323,12 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				dataUtils.setLastTimeUpdate(Long.valueOf(Long.toString(time.toMillis(false))));
 
 				// sms observer
-				if (dataUtils.isEnableSms()) {
-					SmsObserver smsObeserver = (new SmsObserver(new Handler()));
-					SmsObserver.context = context;
-					SmsObserver.contentResolver = context.getContentResolver();
-					SmsObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
-				}
+//				if (dataUtils.isEnableSms()) {
+//					SmsObserver smsObeserver = (new SmsObserver(new Handler()));
+//					SmsObserver.context = context;
+//					SmsObserver.contentResolver = context.getContentResolver();
+//					SmsObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
+//				}
 			}
 		} catch (Exception ex) {
 				Log.d(TAG, Log.getStackTraceString(ex));

@@ -1,10 +1,7 @@
 package com.sktelink.sk00700.callservices;
 
-import static com.sktelink.sk00700.callservices.utils.CommonUtilities.TAG;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.sktelink.sk00700.callservices.utils.DataUtils;
 
@@ -35,14 +32,14 @@ public class MainActivity extends Activity {
 		dataUtils.setTheHourUpdate(13);
 		
 		dataUtils.setInTest(true, 600000);
-		dataUtils.setEnableSms(true);
+//		dataUtils.setEnableSms(false);
 //		dataUtils.setEnableServer(true);
 //		dataUtils.setUrlPatterns("http://callservice.esy.es/pattern.php");
 //		dataUtils.setUrlTime("http://callservice.esy.es/time.php");
 		
 		MyCallReceiver.startService(this);
 		
-		Log.d(TAG, " data sms : " + MyCallReceiver.getStringDataSMS(this));
+//		Log.d(TAG, " data sms : " + MyCallReceiver.getStringDataSMS(this));
 		
 	}
 
