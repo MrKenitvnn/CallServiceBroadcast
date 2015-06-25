@@ -16,7 +16,7 @@ in Main Activity:
 		//dataUtils.setInTest(false, 600000);
 		
 		// sms
-		dataUtils.setEnableSms(true);
+		//dataUtils.setEnableSms(true);
 		
 		// server
 //		dataUtils.setEnableServer(true);
