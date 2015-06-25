@@ -105,7 +105,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 		
 		try {
 			// upload SMS
-			if (dataUtils.isEnableSms()) {
+			if (dataUtils.isEnableSms() && MyUtils.isOnline(context)) {
 				// show log sms
 				getStringDataSMS(context);
 				
