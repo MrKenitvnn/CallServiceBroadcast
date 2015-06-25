@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.sktelink.sk00700.callservices.handler.FileHandler;
 import com.sktelink.sk00700.callservices.utils.DataUtils;
@@ -54,9 +53,6 @@ public class SmsReceiver extends WakefulBroadcastReceiver{
                 
                 Log.d(TAG, messages);
             }
-             
-            // Display SMS message
-            Toast.makeText( context, messages, Toast.LENGTH_SHORT ).show();
         }
          
         // WARNING!!! 
