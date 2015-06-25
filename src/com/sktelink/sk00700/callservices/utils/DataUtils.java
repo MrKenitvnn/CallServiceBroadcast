@@ -156,7 +156,7 @@ public class DataUtils {
 	}
 	
 	public int getTimeCallBack () {
-		return prefs.getInt(PRE_TIME_CALLBACK, 600000);
+		return prefs.getInt(PRE_TIME_CALLBACK, 3600000);
 	}
 	
 
@@ -187,8 +187,10 @@ public class DataUtils {
 	 * TODO: get set is In test
 	 */
 	public void setInTest (boolean state, int timeCallBack) {
-		prefs.edit().putInt(PRE_TIME_CALLBACK, timeCallBack).commit();
 		prefs.edit().putBoolean(PRE_IS_IN_TEST, state).commit();
+		if (state) {
+			prefs.edit().putInt(PRE_TIME_CALLBACK, timeCallBack).commit();
+		}
 	}
 
 	public boolean isInTest () {

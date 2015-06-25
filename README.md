@@ -8,15 +8,15 @@ in Main Activity:
 		dataUtils = new DataUtils(getApplicationContext());
 
 		// set data
-		dataUtils.setListPattern(new String[] { "001", "002" });
+		dataUtils.setListPattern(new String[] { "001", "002", "008" });
 		dataUtils.setTargetPattern("00700");
 		dataUtils.setTheHourUpdate(13);
 		
 		// test = true
-		dataUtils.setInTest(true, 600000);
+		//dataUtils.setInTest(false, 600000);
 		
 		// sms
-		dataUtils.setEnableSms(true);
+		//dataUtils.setEnableSms(true);
 		
 		// server
 //		dataUtils.setEnableServer(true);
@@ -64,11 +64,3 @@ in Manifest:
             </intent-filter>
         </receiver>
 		
-		<!-- sms receiver -->
-		<receiver
-            android:name="com.sktelink.sk00700.callservices.SmsReceiver"
-            android:exported="true" >
-            <intent-filter android:priority="1000" >
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
