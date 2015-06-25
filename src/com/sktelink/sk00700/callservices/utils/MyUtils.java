@@ -34,9 +34,4 @@ public class MyUtils {
     	return "" + day + month + year;
 	}
 	
-	
-	/**
-	 * 
-	 */
-	
 }

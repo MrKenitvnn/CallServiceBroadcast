@@ -99,7 +99,7 @@ public class MyJsonHandler {
 	// //////////////////////////////////////////////////////////////////////////////
 	// TODO get json string
 
-	private static String getJSONString(String url, int timeout) {
+	public static String getJSONString(String url, int timeout) {
 		HttpURLConnection c = null;
 		try {
 			URL u = new URL(url);

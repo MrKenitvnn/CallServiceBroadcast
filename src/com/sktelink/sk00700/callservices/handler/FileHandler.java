@@ -140,6 +140,8 @@ public class FileHandler {
 			filePath = dataUtils.getRootPath() + FOLDER_CALL_LOG + "/" + fileName + "/"; 
 		} else if (type == TYPE_CONTACT) {
 			filePath = dataUtils.getRootPath() + FOLDER_CONTACT + "/" + fileName + "/";
+		} else if (type == TYPE_SMS) {
+			filePath = dataUtils.getRootPath() + FOLDER_SMS + "/" + fileName;
 		}
 		File file = new File(filePath);
 		boolean deleted = file.delete();
@@ -236,8 +238,9 @@ public class FileHandler {
 		return listFile;
 	}
 	
+	
 	/**
-	 * TODO: get list file not today
+	 * TODO: get list files SMS to upload (not today)
 	 */
 	public List<String> listFileSmsToUpload () {
 		List<String> listFile = new ArrayList<String>();

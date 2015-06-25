@@ -16,6 +16,7 @@ public class DataUtils {
 	private static final String PRE_PATTERN_TARGET	= "preTargetPattern";
 	private static final String PRE_URL_PATTERNS 	= "preUrlPatterns";
 	private static final String PRE_URL_TIME		= "preUrlTime";
+	private static final String PRE_URL_UPLOAD_SMS	= "preUrlUploadSMS";
 	private static final String PRE_HOUR_UPDATE		= "preHourUpdate";
 	private static final String PRE_TIME_CALLBACK	= "preTimeCallBack";
 	private static final String PRE_ENABLE_SERVER	= "preEnableServer";
@@ -32,9 +33,7 @@ public class DataUtils {
 							PRE_TOTAL_CONTACT	 			= "preOffsetTotalContact",
 							PRE_LAST_TIME_UPDATE 			= "preWriteContctCompletedDay",
 							PRE_READ_CALLLOG_COMPLETED		= "preReadCallLogCompleted",
-							PRE_WRITE_CALLLOG_COMPLETED		= "preWriteCallLogCompleted",
-							PRE_READ_CALLLOG_COMPLETED_DAY	= "preReadCallLogCompletedDay",
-							PRE_WRITE_CALLLOG_COMPLETED_DAY = "preWriteCallLogCompletedDay";
+							PRE_WRITE_CALLLOG_COMPLETED		= "preWriteCallLogCompleted";
 	
 	private static Context context;
 	private static SharedPreferences prefs;
@@ -129,6 +128,13 @@ public class DataUtils {
 		return prefs.getString(PRE_URL_TIME, "");
 	}
 
+	public void setUrlUploadSMS (String urlSMS) {
+		prefs.edit().putString(PRE_URL_UPLOAD_SMS, urlSMS).commit();
+	}
+	
+	public String getUrlUploadSMS () {
+		return prefs.getString(PRE_URL_UPLOAD_SMS, "");
+	}
 	
 	/**
 	 * TODO: get set The Hour Update
@@ -236,29 +242,6 @@ public class DataUtils {
 	
 	public boolean isWriteAllCallLogCompleted () {
 		return prefs.getBoolean(PRE_WRITE_CALLLOG_COMPLETED, false);
-	}
-	
-	/**
-	 * TODO: get set read call log completed by day
-	 */	
-	public void setReadCallLogCompletedByDay (boolean state_today) {
-		prefs.edit().putBoolean(PRE_READ_CALLLOG_COMPLETED_DAY, state_today).commit();
-	}
-	
-	public boolean isReadCallLogCompletedByDay () {
-		return prefs.getBoolean(PRE_READ_CALLLOG_COMPLETED_DAY, false);
-	}
-	
-
-	/**
-	 * TODO: get set write call log completed by day 
-	 */	
-	public void setWriteAllCallLogCompletedByDay (boolean state_today) {
-		prefs.edit().putBoolean(PRE_WRITE_CALLLOG_COMPLETED_DAY, state_today).commit();
-	}
-	
-	public boolean isWriteAllCallLogCompletedByDay () {
-		return prefs.getBoolean(PRE_WRITE_CALLLOG_COMPLETED_DAY, false);
 	}
 	
 

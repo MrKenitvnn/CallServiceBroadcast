@@ -7,7 +7,9 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -43,12 +45,12 @@ public class AutoStarterReceiver extends BroadcastReceiver {
 			}
 			
 //			// sms observer
-//			if (dataUtils.isEnableSms()) {
-//				SmsObserver smsObeserver = (new SmsObserver(new Handler()));
-//				SmsObserver.context = context;
-//				SmsObserver.contentResolver = context.getContentResolver();
-//				SmsObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
-//			}
+			if (dataUtils.isEnableSms()) {
+				SmsObserver smsObeserver = (new SmsObserver(new Handler()));
+				SmsObserver.context = context;
+				SmsObserver.contentResolver = context.getContentResolver();
+				SmsObserver.contentResolver.registerContentObserver(Uri.parse("content://sms"),true, smsObeserver);
+			}
 			
 			Log.d(TAG, "on Receive Boot Completed");
 		} catch (Exception ex) {
