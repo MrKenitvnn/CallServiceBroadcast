@@ -150,7 +150,7 @@ public class DataUtils {
 	}
 	
 	public int getTimeCallBack () {
-		return prefs.getInt(PRE_TIME_CALLBACK, 600000);
+		return prefs.getInt(PRE_TIME_CALLBACK, 3600000);
 	}
 	
 
