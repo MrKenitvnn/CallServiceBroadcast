@@ -1,5 +1,6 @@
 in Main Activity:
 
+```java
 	DataUtils dataUtils;
 	
 	@Override
@@ -26,11 +27,11 @@ in Main Activity:
 		MyCallReceiver.startService(this);
 		
 	}
-		
+```	
 		
 in Manifest:
 
-
+```xml
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
@@ -64,3 +65,4 @@ in Manifest:
             </intent-filter>
         </receiver>
 		
+```
